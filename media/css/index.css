@@ -1,0 +1,44 @@
+#header {
+	width: 600px;
+	border: 1px solid #000000;
+	text-align: center;
+}
+
+#linkbar {
+	white-space: nowrap;
+	margin-bottom: 5px;
+}
+
+#content {
+	text-align: left;
+	width: 600px;
+	margin-top: 10px;
+	border: 1px solid #000000;
+	cursor: default;
+}
+
+div.graph_container {
+	border: 1px #000000 solid;
+	width: 250px;
+	background-color: #ffffff;
+}
+
+.site_label {
+	font-size: 153.9%;
+	border: 1px #000000 solid;
+	padding-left: 20px;
+	margin: 2px;
+}
+
+div.graph {
+	height: 200px;
+	width: 200px;
+	margin: 17.5px;
+}
+
+div.grid_square {
+	width: 260px;
+	border: 2px #000000 dashed;
+	padding: 10px;
+	margin: 10px;
+}

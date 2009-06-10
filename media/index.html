@@ -1,0 +1,228 @@
+<html>
+<head>
+<title>Cesium</title>
+<link rel="stylesheet" type="text/css" href="css/reset-min.css" />
+<link rel="stylesheet" type="text/css" href="css/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="css/index.css" />
+<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="js/flot/jquery.flot.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.7.1.custom.min.js"></script>
+<script type="text/javascript">
+var grid;	
+$(document).ready(function() {
+	var graphs = fetch_graphs();
+	grid = new Grid();	
+	grid.attach('div#content');
+	grid.hide();
+	$(graphs).each(function (i) {
+		this.load_graph("div#grid"+i);
+	});
+});
+
+// gets all the data to be graphed
+function fetch_graphs() {
+	var graphs_arr = new Array();
+	var data = new Array();
+	for (var i = 0; i < 14; i += 0.5)
+		data.push([i, Math.sin(i) + 1.0]);
+	var plots1 = new Array();
+	plots1.push(data);
+	var plots2 = new Array();
+	var data = new Array();
+	for (var i = 0; i < 14; i += 0.5)
+		data.push([i, Math.cos(i)+1.0]);
+	plots2.push(data);
+	graphs_arr[0] = new SiteGraph("wwwfoocom", plots1);
+	graphs_arr[1] = new SiteGraph("wwwbarcom", plots2);
+	return graphs_arr;
+}
+
+// Grid class for dragging and dropping the graphs
+function Grid(graphs) {
+	this.squares = new Array();
+	for (var i = 0; i < graphs.length; i++) {
+		this.squares[i] = document.createElement('div');
+		$(this.squares[i]).attr({"class": "grid_square", "id": "grid"+i});
+		$(this.squares[i]).droppable({
+			drop: function (event, ui) {
+				$(this).append(ui.draggable[0]);
+				$(this).css("backgroundColor", "#ffffff");
+				$(ui.draggable[0]).css({
+					"left": $(this).css("left"), 
+					"top": $(this).css("top"),
+				});
+			},
+			over: function (event, ui) {
+				grid.shift($(ui.draggable[0]).parent(".grid_square")[0], this);
+				$(this).css("backgroundColor", "#ccff99");
+			},
+
+			out: function () {
+				$(this).css("backgroundColor", "#ffffff");
+			}
+		});
+	}
+
+	Grid.prototype.hide = function() {
+		$('.grid_square').each(function () {
+			$(this).css("borderColor", "#ffffff");
+		});
+	}
+
+	Grid.prototype.show = function() {
+		$('.grid_square').each(function () {
+			$(this).css("borderColor", "#000000");
+		});
+	}
+
+	Grid.prototype.attach = function(selector) {
+		for (var i = 0; i < this.squares.length; i++) {
+			$(selector).append(this.squares[i]);
+		}
+	}
+}
+
+
+
+// TODO
+// source: the grid_square where the element is coming from
+// dest: the grid_square where we're putting the element
+Grid.prototype.shift = function(source, dest) {
+	var source_idx;
+	var dest_idx;
+	
+	// find exactly where the item is in the array
+	for (var i = 0; i < grid.squares.length; i++) {
+		if (grid.squares[i] === source)
+			source_idx = i;
+		if (grid.squares[i] === dest)
+			dest_idx = i;
+	}
+
+	// get the start index, stop index, and rotation amount		
+	start_idx = Math.min(source_idx, dest_idx);
+	stop_idx = Math.max(source_idx, dest_idx);
+	var rot_n;
+
+	// the element is moving toward the end of the array
+	if (source_idx - dest_idx < 0)
+	{
+		rot_n = 1;
+		stop_idx--;
+	}
+	// the element is moving toward the front of the array
+	else
+		rot_n = source_idx - dest_idx;
+	
+	// ab -> ba where a is the length you want to rotate
+	// equiv. to rev(rev(a)+rev(b))
+	var newslice = grid.squares.slice(start_idx, start_idx+rot_n).reverse().concat(grid.squares.slice(start_idx+rot_n, stop_idx).reverse()).reverse()
+	
+	// copy over the new elements
+	for (var i = 0; i < newslice.length; i++)
+		grid.squares[i+start_idx] = newslice[i];
+
+	// change DOM to reflect the new grid array
+	$('.graph_container').each(function (i) {
+		console.log("moving %d", i);
+		$("div#grid"+i).append(this);
+	});
+}
+
+// Object encapsulating the graph DOM objects
+function SiteGraph(site, plots) {
+	// the main container
+	this.maindiv = document.createElement('div');
+	$(this.maindiv).attr({"class": "graph_container", "id": site+"_main"});
+	$(this.maindiv).draggable({revert: "invalid"});
+
+	// the label
+	this.sitelabel = document.createElement('h3');
+	$(this.sitelabel).html(site);
+	$(this.sitelabel).attr({"class": "site_label", "id": site+"_label"});
+	$(this.sitelabel).hover(function () {
+			$(this).css({"backgroundColor": "#000000", "color": "#ffffff"});
+		},
+		function () {
+			$(this).css({"backgroundColor": "#ffffff", "color": "#000000"});
+		});
+	$(this.maindiv).append(this.sitelabel);
+	
+	// the graph container	
+	this.graphdiv = document.createElement('div');
+	$(this.graphdiv).css({"height": "200px", "width": "200px"});
+	$(this.graphdiv).attr({"class": "graph", "id": site+"_graph"});
+	$(this.maindiv).append(this.graphdiv);
+	
+	// graph plot data
+	this.plots = plots;
+
+	// shows the grid
+	$(this.maindiv).mousedown(function () {
+		$(this).mousemove(function () {
+			if (!($(this).hasClass("moved")))
+				grid.show();
+			$(this).addClass("moved");
+		});
+		$(this).mouseup(function () {
+			grid.hide();
+			$(this).unbind('mousemove');
+			$(this).removeClass("moved");
+		});
+	});
+	
+	// minimize/maximize function
+	$(this.sitelabel).mousedown(function () {
+		$(this).mousemove(function () {
+			$(this).addClass("moved");
+		});
+		$(this).mouseup(function () {
+			grid.hide();
+			$(this).css({
+				"backgroundColor": "#ffffff",
+				"color": "#000000"});
+			$(this).unbind('mousemove');
+		});
+	});
+	
+	$(this.sitelabel).click(function () {
+			if (!($(this).hasClass("moved")))
+			{
+				if ($("div#"+site+"_graph").css("display") == "none")
+					$("div#"+site+"_graph").css("display", "block");
+				else
+					$("div#"+site+"_graph").css("display", "none");
+			}
+			else
+			{
+				$(this).removeClass("moved");
+			}
+		});
+}
+
+// loads the graphs into the DOM
+SiteGraph.prototype.load_graph = function (selector) {
+	$(selector).append(this.maindiv);
+	$.plot($('div#'+this.graphdiv.getAttribute("id")), 
+		this.plots,
+		{	lines: { show: true, color: "#000000", fill: true, fillColor: "rgba(102, 255, 102, 0.8)" },
+			points: { show: true, fill: true},
+			grid: { backgroundColor: "#ff6666" },
+			colors: ["#000000"]
+		});
+}
+</script>
+</head>
+<body>
+<center><div id="main">
+<center><h1>Cesium</h1></center>
+<center><div id="linkbar">
+<a href="/index.html" >Dashboard</a>
+<a href="/sites.html" >Sites</a>
+<a href="/tests.html" >Tests</a>
+</div></center>
+<div id="content">
+</div>
+</div></center>
+</body>
+</html>
