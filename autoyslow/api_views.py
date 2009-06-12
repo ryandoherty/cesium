@@ -1,44 +1,3 @@
-from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
-from django.core import serializers
-from yslow.autoyslow.models import Site, Page, Test
-import spawnff
-import datetime, time
-
-def index(request):
-	graphs = []
-	tests = Test.objects.all()
-	sites = {}
-	for test in tests:
-		try:
-			sites[test.page.site][test.time].append(test.score)
-		except KeyError:
-			try:
-				sites[test.page.site][test.time] = [test.score]
-			except KeyError:
-				sites[test.page.site] = {test.time: [test.score]}
-	data = {}	
-	for site in sites:
-		for dtime in sites[site]:
-			try:
-				data[site].append([long(time.mktime(dtime.timetuple())*1000), (sum(sites[site][dtime]))/(len(sites[site][dtime]))]))
-			except KeyError:
-				data[site] = [[long(time.mktime(dtime.timetuple())*1000), (sum(sites[site][dtime]))/(len(sites[site][dtime]))]]	
-	
-	return render_to_response("index.html", {"graph_data": data})
-
-def pages_index(request):
-	page_list = Page.objects.all()
-	return render_to_response("pages/index.html", {'page_list': page_list}) 
-
-def page_detail(request, page_id):
-	page = get_object_or_404(Page, id=page_id)
-	return render_to_response("pages/detail.html", {'page': page}) 
-
-def tests_index(request):
-	return render_to_response("tests/index.html", {}) 
-
 def run_test(request):
 	try:
 		url = request.POST['url']
@@ -110,11 +69,3 @@ def api_getbyurl(request):
 		pages = Page.objects.filter(url=url)
 		data = serializers.serialize("json", pages)
 	return data 
-
-def beacon(request):
-	new_url = request.GET["u"]
-	new_score = request.GET["o"]
-	new_time = datetime.datetime.now()
-	p = Page(url=new_url, overall_score=new_score, run_time=new_time)
-	p.save()
-	return HttpResponseRedirect(reverse('yslow.autoyslow.views.index')) 

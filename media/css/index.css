@@ -1,7 +1,9 @@
 #header {
-	width: 600px;
+	width: 880px;
 	border: 1px solid #000000;
 	text-align: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #linkbar {
@@ -11,16 +13,51 @@
 
 #content {
 	text-align: left;
-	width: 600px;
+    width: 880px;
 	margin-top: 10px;
-	border: 1px solid #000000;
+	margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #000000;
 	cursor: default;
+    zoom: 1;
+    padding-bottom: 10px;
+}
+
+#content:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
 }
 
 div.graph_container {
 	border: 1px #000000 solid;
 	width: 250px;
 	background-color: #ffffff;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.row {
+    width: 830px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px #000000 solid;
+    padding-right: 10px;
+    margin-top: 10px;
+    zoom: 1;
+
+}
+
+.row:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
 }
 
 .site_label {
@@ -28,6 +65,12 @@ div.graph_container {
 	border: 1px #000000 solid;
 	padding-left: 20px;
 	margin: 2px;
+}
+
+.site_label:hover {
+    background-color: #000000;
+    color: #ffffff;
+    cursor: move;
 }
 
 div.graph {
@@ -38,7 +81,24 @@ div.graph {
 
 div.grid_square {
 	width: 260px;
-	border: 2px #000000 dashed;
-	padding: 10px;
-	margin: 10px;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    float: left;
+}
+
+.minimized {
+    display: none;
+}
+
+.invisible {
+    background-color: #ffffff;
+    border: 2px #ffffff dashed;
+}
+
+.visible {
+    background-color: #ccffcc;
+    border: 2px #000000 dashed;
 }
