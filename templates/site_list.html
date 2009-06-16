@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Cesium - Sites
+{% endblock title %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="/site_media/css/list.css" />
+{% endblock style %}
+
+{% block content %}
+<h2 id="page-title">Sites</h2>
+<ul>
+{% if sites %}
+    {% for site in sites %}
+    <li><a href="/sites/{{ site.id }}/">{{ site.base_url }}</a></li>
+    {% endfor %}
+{% else %}
+    <li>You have no Sites to display.</li>
+{% endif %}
+</ul>
+{% endblock content %}

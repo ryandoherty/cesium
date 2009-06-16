@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Cesium - Upcoming Tests
+{% endblock title %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="/site_media/css/list.css" />
+{% endblock style %}
+
+{% block content %}
+<h2 id="page-title">Upcoming Tests</h2>
+<ul>
+{% if tests %}
+    {% for test in tests %}
+    <li>{{ test.page.site.base_url }} {{ test.time }}</li>
+    {% endfor %}
+{% else %}
+    <li>You have no upcoming tests</li>
+{% endif %}
+</ul>
+{% endblock content %}

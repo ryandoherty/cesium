@@ -1,0 +1,38 @@
+#site-info {
+    border: 1px #000000 solid;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    width: 600px;
+}
+
+#page-list {
+    border: 1px #000000 solid;
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    padding-bottom: 10px;
+}
+
+ul {
+    margin-left: 10px;
+    padding-bottom: 10px;
+}
+
+li {
+    margin-top: 10px;
+}
+
+form {
+    margin-left: 10px;
+    padding-bottom: 10px;
+}
+
+input {
+    margin-top: 10px;
+}
+
+.minimized {
+    display: none;
+}

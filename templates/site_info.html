@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}
+Cesium - Site Info - {{ site.base_url }}
+{% endblock title %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="/site_media/css/info.css" />
+{% endblock style %}
+
+{% block content %}
+<div id="site-info">
+<h2 id="page-title">Site Info</h2>
+<h2>Base URL: {{ site.base_url }}</h2>
+<form id="info_form" action="/sites/{{ site.id }}/update/info/" method="post">
+Test Frequency:
+<input class="freq" type="radio" name="freq" value="hourly" />Hourly
+<input class="freq" type="radio" name="freq" value="daily" />Daily
+<input class="freq" type="radio" name="freq" value="weekly" />Weekly
+<br />
+<div id="timebox">
+Start time: <input type="text" name="time" />
+</div>
+<div id="weekday">
+Day of the Week: 
+<input type="radio" name="day" value="m" /> M
+<input type="radio" name="day" value="t" /> T
+<input type="radio" name="day" value="w" /> W
+<input type="radio" name="day" value="th" /> Th
+<input type="radio" name="day" value="f" /> F
+<input type="radio" name="day" value="s" /> S
+<input type="radio" name="day" value="su" /> Su
+</div>
+<input id="info_button" type="submit" value="Submit" />
+</form>
+</div>
+
+
+<div id="page-list">
+    <h2 id="page-title">Pages</h2>
+    <ul>
+        {% for page in site.page_set.all %}
+        <li>{{ page.url }}
+        <a class="remove" href="/sites/{{ site.id }}/pages/{{ page.id }}/remove/">Remove</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <form action="/sites/{{ site.id }}/pages/new/" method="post">
+        <input type="text" name="url" id="page-empty" value="" />
+        <br />
+        <input id="page_button" type="submit" value="Submit" />
+    </form>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.remove').click(function() {
+        var resp = confirm("Are you sure you want to remove this page?");
+        if (!resp)
+            return false;
+    });
+    $('.freq').change(function() {
+        var val = $(this).attr('value');
+        if (val === "hourly" || val === "daily")
+            $("#weekday").addClass("minimized");
+        else
+            $("#weekday").removeClass("minimized");
+    });
+});
+</script>
+{% endblock scripts %}
