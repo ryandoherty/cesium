@@ -27,6 +27,7 @@ li {
 form {
     margin-left: 10px;
     padding-bottom: 10px;
+    display: inline;
 }
 
 input {
@@ -35,4 +36,38 @@ input {
 
 .minimized {
     display: none;
+}
+
+button {
+    overflow: visible;
+    margin-left: 10px;
+    margin-top: 10px;
+    width: auto;
+}
+
+button.link {
+    text-align: left;
+    color: blue;
+    background: none;
+    margin: 0px;
+    padding: 0px;
+    border: none;
+    cursor: pointer;
+}
+
+button.link span {
+    text-decoration: underline;
+}
+
+button.link:hover span,
+button.link:focus span {
+    color: black;
+}
+
+#timebox {
+    margin-left: 10px;
+}
+
+#weekday {
+    margin-left: 10px;
 }

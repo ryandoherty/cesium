@@ -3,19 +3,21 @@ from django.db import connection, transaction
 
 class Site(models.Model):
     base_url = models.CharField(max_length=100)
-    #hourly = models.BooleanField()
-    #daily = models.BooleanField()
-    #weekly = models.BooleanField()
-    #test_time = models.TimeField()
-    #weekday = models.CharField(max_length=2, choices=(
-    #    ('M', 'Monday'),
-    #    ('T', 'Tuesday'),
-    #    ('W', 'Wednesday'),
-    #    ('Th', 'Thursday'),
-    #    ('F', 'Friday'),
-    #    ('S', 'Saturday'),
-    #    ('Su', 'Sunday')
-    #))
+    freq = models.CharField(max_length=1, choices=(
+        ('h', 'Hourly'),
+        ('d', 'Daily'),
+        ('w', 'Weekly'),
+    ))
+    test_time = models.TimeField()
+    weekday = models.CharField(max_length=2, choices=(
+        ('m', 'Monday'),
+        ('t', 'Tuesday'),
+        ('w', 'Wednesday'),
+        ('th', 'Thursday'),
+        ('f', 'Friday'),
+        ('s', 'Saturday'),
+        ('su', 'Sunday')
+    ))
 
 # returns a list of dicts containing score, site_id, date, base_url keys
 def get_site_averages():

@@ -13,7 +13,7 @@ Cesium - Sites
 <ul>
 {% if sites %}
     {% for site in sites %}
-    <li><a href="/sites/{{ site.id }}/">{{ site.base_url }}</a></li>
+    <li><a href="{% url cesium.autoyslow.site_views.site_info site.id %}">{{ site.base_url }}</a></li>
     {% endfor %}
 {% else %}
     <li>You have no Sites to display.</li>

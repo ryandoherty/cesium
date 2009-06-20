@@ -13,7 +13,7 @@ Cesium - Upcoming Tests
 <ul>
 {% if tests %}
     {% for test in tests %}
-    <li>{{ test.page.site.base_url }} {{ test.time }}</li>
+    <li>{{ test.base_url }} {{ test.test_time }}</li>
     {% endfor %}
 {% else %}
     <li>You have no upcoming tests</li>

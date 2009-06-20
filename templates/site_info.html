@@ -10,29 +10,78 @@ Cesium - Site Info - {{ site.base_url }}
 
 {% block content %}
 <div id="site-info">
-<h2 id="page-title">Site Info</h2>
-<h2>Base URL: {{ site.base_url }}</h2>
-<form id="info_form" action="/sites/{{ site.id }}/update/info/" method="post">
-Test Frequency:
-<input class="freq" type="radio" name="freq" value="hourly" />Hourly
-<input class="freq" type="radio" name="freq" value="daily" />Daily
-<input class="freq" type="radio" name="freq" value="weekly" />Weekly
+<form action="{% url cesium.autoyslow.site_views.update_site site.id %}" method="post">
+<p>Base URL: {{ site.base_url }}</p>
 <br />
-<div id="timebox">
-Start time: <input type="text" name="time" />
-</div>
-<div id="weekday">
-Day of the Week: 
-<input type="radio" name="day" value="m" /> M
-<input type="radio" name="day" value="t" /> T
-<input type="radio" name="day" value="w" /> W
-<input type="radio" name="day" value="th" /> Th
-<input type="radio" name="day" value="f" /> F
-<input type="radio" name="day" value="s" /> S
-<input type="radio" name="day" value="su" /> Su
-</div>
-<input id="info_button" type="submit" value="Submit" />
+{{ form.as_p }}
+<button type="submit">Submit</button>
 </form>
+<!--<h2 id="page-title">Site Info</h2>
+<h2>Base URL: {{ site.base_url }}</h2>
+<form id="info_form" action="{% url cesium.autoyslow.site_views.update_site site.id %}" method="post">
+Test Frequency:
+<input class="freq" type="radio" name="freq" value="hourly" id="hourly" 
+{% if site.hourly %} checked="checked" {% endif %} />
+<label for="hourly">Hourly</label>
+<input class="freq" type="radio" name="freq" value="daily" id="daily" 
+{% if site.daily %} checked="checked" {% endif %} />
+<label for="daily">Daily</label>
+<input class="freq" type="radio" name="freq" value="weekly" id="weekly" 
+{% if site.weekly %} checked="checked" {% endif %} />
+<label for="weekly">Weekly</label>
+<br />
+
+<div id="timebox">
+Start time:
+{{ site.test_time.hour }} 
+<select>
+{% for i in hours %}
+<option value="{{ i }}"
+{% ifequal site.test_time.hour i %}selected="selected"{% endifequal %}>
+{{ i }}</option>
+{% endfor %}
+</select>
+<select>
+{% for i in minutes %}
+<option value="{{ i }}" 
+{% ifequal site.test_time.minute i %}selected="selected"{% endifequal %}>
+{% ifequal 0 i %}0{% endifequal %}{{ i }}
+</option>
+{% endfor %}
+</select>
+<select>
+<option value="am">AM</option>
+<option value="pm">PM</option>
+</select>
+<input type="text" name="time" id="time" value="{{ site.test_time|time }}" />
+</div>
+
+<div id="weekday" class="{% if site.hourly or site.daily %} minimized {% endif %}">
+Day of the Week: 
+<input type="radio" name="weekday" value="m" id="m" 
+    checked="{% ifequal site.weekweekday "m" %} checked {% endifequal %}" />
+<label for="m">M</label>
+<input type="radio" name="weekday" value="t" id="t"
+    checked="{% ifequal site.weekweekday "t" %} checked {% endifequal %}" />
+<label for="t">T</label>
+<input type="radio" name="weekday" value="w" id="w"
+    checked="{% ifequal site.weekweekday "w" %} checked {% endifequal %}" />
+<label for="w">W</label>
+<input type="radio" name="weekday" value="th" id="th"
+    checked="{% ifequal site.weekweekday "th" %} checked {% endifequal %}" />
+<label for="th">Th</label>
+<input type="radio" name="weekday" value="f" id="f"
+    checked="{% ifequal site.weekweekday "f" %} checked {% endifequal %}" />
+<label for="f">F</label>
+<input type="radio" name="weekday" value="s" id="s"
+    checked="{% ifequal site.weekweekday "s" %} checked {% endifequal %}" />
+<label for="s">S</label>
+<input type="radio" name="weekday" value="su" id="su"
+    checked="{% ifequal site.weekweekday "su" %} checked {% endifequal %}" />
+<label for="su">Su</label>
+</div>
+<button id="info_button" type="submit">Submit</button>
+</form>-->
 </div>
 
 
@@ -41,14 +90,16 @@ Day of the Week:
     <ul>
         {% for page in site.page_set.all %}
         <li>{{ page.url }}
-        <a class="remove" href="/sites/{{ site.id }}/pages/{{ page.id }}/remove/">Remove</a>
+        <form action="{% url cesium.autoyslow.site_views.remove_page site.id,page.id %}" method="post">
+            <button type="submit" class="link"><span>Remove</span></button>
+        </form>
         </li>
         {% endfor %}
     </ul>
-    <form action="/sites/{{ site.id }}/pages/new/" method="post">
+    <form action="{% url cesium.autoyslow.site_views.add_page site.id %}" method="post">
         <input type="text" name="url" id="page-empty" value="" />
         <br />
-        <input id="page_button" type="submit" value="Submit" />
+        <button id="page_button" type="submit">Submit</button>
     </form>
 </div>
 {% endblock content %}
@@ -56,7 +107,7 @@ Day of the Week:
 {% block scripts %}
 <script type="text/javascript">
 $(document).ready(function() {
-    $('.remove').click(function() {
+    $('button.link').click(function() {
         var resp = confirm("Are you sure you want to remove this page?");
         if (!resp)
             return false;
