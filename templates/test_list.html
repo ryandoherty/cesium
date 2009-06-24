@@ -9,14 +9,15 @@ Cesium - Upcoming Tests
 {% endblock style %}
 
 {% block content %}
-<h2 id="page-title">Upcoming Tests</h2>
+<h2 id="page-title">Upcoming Tests (Next 24 Hours)</h2>
 <ul>
 {% if tests %}
     {% for test in tests %}
-    <li>{{ test.base_url }} {{ test.test_time }}</li>
+    <li>{{ test.1.base_url }} {{ test.0|timeuntil }}</li>
     {% endfor %}
 {% else %}
     <li>You have no upcoming tests</li>
 {% endif %}
 </ul>
+{% now "r" %}
 {% endblock content %}

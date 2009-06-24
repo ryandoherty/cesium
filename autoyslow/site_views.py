@@ -114,17 +114,10 @@ def test_list(request):
     });
 
 def get_upcoming_tests():
-    sites = list(Site.objects.all())
-    sites.sort(cmp=lambda x, y: cmp_timedelta(time_til_next_test(x), time_til_next_test(y)))
+    now = datetime.datetime.now()
+    sites = [(time_til_next_test(site)+now, site) for site in Site.objects.all()]
+    sites.sort()#cmp=lambda x, y: cmp(x[0], y[0]))
     return sites
-
-def cmp_timedelta(td1, td2):
-    if td1 > td2:
-        return 1
-    elif td1 < td2:
-        return -1
-    else:
-        return 0
 
 def time_til_next_test(site):
     now = datetime.datetime.now()
@@ -132,7 +125,6 @@ def time_til_next_test(site):
     if site.freq == 'h':
         # if we've already done a test this hour...
         if now.minute > site.test_time.minute:
-            print "already tested this hour"
             return now.replace(hour=(now.hour+1), minute=site.test_time.minute) - now
         return now.replace(minute=site.test_time.minute) - now
     # daily 
@@ -140,16 +132,20 @@ def time_til_next_test(site):
         # if we've already done a test today...
         if now.time().hour > site.test_time.hour or\
             (now.time().hour == site.test_time.hour and\
-            now.time().minute == site.test_time.minute): 
-            print "already tested today"
+            now.time().minute > site.test_time.minute): 
             return now.replace(day=(now.day+1), hour=site.test_time.hour, minute=site.test_time.minute) - now
-        print "yet to test today"
         return now.replace(hour=site.test_time.hour, minute=site.test_time.minute) - now
     # weekly
     elif site.freq == 'w':
         # if we've already done a test this week...
-        # TODO
-        print "yeah..."
+        # TODO: in desperate need of a heavily-scrutinizing code review...
+        if (now.time().hour > site.test_time.hour and\
+            now.date().weekday() == site.weekday) or\
+            now.date().weekday() > site.weekday or\
+            (now.time().hour == site.test_time.hour and\
+            now.date().weekday() == site.weekday and\
+            now.time().minute > site.test_time.minute):
+            pass 
         return None
     else:
         raise ValueError, "Database corruption: value of freq not valid: " + site.freq
@@ -166,6 +162,7 @@ def update_site(request, site_id):
     weekday = request.POST['weekday']
     s.test_time, s.freq, s.weekday = test_time, freq, weekday
     s.save()
+    s.save_schedule()
     return HttpResponseRedirect(reverse('cesium.autoyslow.site_views.site_info', args=(site_id,)))
 
 def add_page(request, site_id):
