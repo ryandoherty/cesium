@@ -6,7 +6,7 @@ from cesium.autoyslow.models import Site, Page, Test, get_site_averages
 import spawnff
 import time
 import datetime
-import json
+from django.utils import simplejson
 import itertools
 from django import forms
 
@@ -35,7 +35,7 @@ def index(request):
         for entry in site_graphs[key]:
             date_ms = time.mktime(datetime.datetime.strptime(entry['date'], date_format).timetuple())
             json_data[key].append([date_ms, entry['score']])
-    json_data = json.dumps(json_data)
+    json_data = simplejson.dumps(json_data)
 
     return render_to_response("dashboard.html", {
         'data': data, 
