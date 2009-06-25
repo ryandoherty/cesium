@@ -49,7 +49,7 @@ class Site(models.Model):
         new_file = "\n".join(new_file)
         cron_file.write(new_file + "\n")
         cron_file.close()
-        os.system("crontab cesium.cron")
+        os.system("crontab -u root cesium.cron")
 
     # returns a properly formatted cron time string for this Site object
     def cron_time(self):
