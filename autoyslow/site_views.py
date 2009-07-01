@@ -102,7 +102,6 @@ class SelectTimeField(forms.fields.MultiValueField):
 
 class SiteForm(forms.ModelForm):
     test_time = SelectTimeField()    
-
     class Meta:
         model = Site
         exclude = ('base_url',)
@@ -115,40 +114,10 @@ def test_list(request):
 
 def get_upcoming_tests():
     now = datetime.datetime.now()
-    sites = [(time_til_next_test(site)+now, site) for site in Site.objects.all()]
-    sites.sort()#cmp=lambda x, y: cmp(x[0], y[0]))
+    sites = [(site.time_til_next_test(now)+now, site)\
+        for site in Site.objects.all()]
+    sites.sort()
     return sites
-
-def time_til_next_test(site):
-    now = datetime.datetime.now()
-    # hourly
-    if site.freq == 'h':
-        # if we've already done a test this hour...
-        if now.minute > site.test_time.minute:
-            return now.replace(hour=(now.hour+1), minute=site.test_time.minute) - now
-        return now.replace(minute=site.test_time.minute) - now
-    # daily 
-    elif site.freq == 'd':
-        # if we've already done a test today...
-        if now.time().hour > site.test_time.hour or\
-            (now.time().hour == site.test_time.hour and\
-            now.time().minute > site.test_time.minute): 
-            return now.replace(day=(now.day+1), hour=site.test_time.hour, minute=site.test_time.minute) - now
-        return now.replace(hour=site.test_time.hour, minute=site.test_time.minute) - now
-    # weekly
-    elif site.freq == 'w':
-        # if we've already done a test this week...
-        # TODO: in desperate need of a heavily-scrutinizing code review...
-        if (now.time().hour > site.test_time.hour and\
-            now.date().weekday() == site.weekday) or\
-            now.date().weekday() > site.weekday or\
-            (now.time().hour == site.test_time.hour and\
-            now.date().weekday() == site.weekday and\
-            now.time().minute > site.test_time.minute):
-            pass 
-        return None
-    else:
-        raise ValueError, "Database corruption: value of freq not valid: " + site.freq
 
 def update_site(request, site_id):
     s = Site.objects.get(id=site_id)
@@ -177,3 +146,14 @@ def remove_page(request, site_id, page_id):
     page = Page.objects.get(id=page_id)
     page.delete()
     return HttpResponseRedirect(reverse('cesium.autoyslow.site_views.site_info', args=(site.id,)))
+
+def site_data(request, site_id):
+    site = Site.objects.get(id=site_id)
+    id_name_dict = dict((page.id, page.url) for page in site.page_set.all())
+    page_graphs = dict((page.id, [(test.time.ctime(), test.score) for test in page.test_set.all()]) for page in site.page_set.all())
+    
+    return render_to_response('site_data.html', {
+        'pages': page_graphs,
+        'id_name_dict': id_name_dict,
+        'json_data': simplejson.dumps(page_graphs)
+    })

@@ -4,15 +4,15 @@ import threading
 import subprocess
 import time
 
-lock = threading.Lock()
-
-# since each site could potentially load hundreds of pages, this code loads 
+# Since each site could potentially load hundreds of pages, this code loads 
 # ten pages in a single instance of Firefox, kills that instance, then 
 # repeats until all the requested pages have been loaded.  Since only one 
-# instance of Firefox can be run at any one time, we have to use a lock to 
-# prevent multiple threads from trying to open Firefox at the same time
-def run_test(browser_loc, page_list):
-    # config stuff
+# instance of Firefox can be run at any one time, we wait on the current  
+# thread to prevent multiple threads from trying to open Firefox at the 
+# same time
+def run_test(page_list):
+    # config stuff TODO: this will be pulled out into a config file
+    browser_loc = "/usr/bin/firefox"
     loads_per_proc = 10
     page_timeout = 15    # per web page
 
@@ -26,10 +26,14 @@ def run_test(browser_loc, page_list):
         # iterate through, loading loads_per_proc number of pages per go around
     curr_first = 0
     for i in range((len(page_list) / loads_per_proc)+extra_round):
-        args = ["sudo", browser_loc, "--display=:0"]
+        args = ["sudo", browser_loc, "-no-remote", "--display=:0"]
         args.extend(page_list[curr_first:(curr_first+loads_per_proc)])
-        test = Test(arg_arr=args, timeout=(loads_per_proc*page_timeout))
-        test.start()
+        proc = subprocess.Popen(self.arg_arr)
+        time.sleep(float(loads_per_proc * page_timeout))
+        proc.kill()
+        #test = Test(arg_arr=args, timeout=(loads_per_proc*page_timeout))
+        #test.start()
+        #test.join()
         if curr_first + loads_per_proc > len(page_list):
             loads_per_proc = len(page_list) - curr_first
         else:
@@ -42,14 +46,12 @@ class Test(threading.Thread):
         threading.Thread.__init__(self)
     
     def run(self):
-        lock.acquire()
         print "Spawning Firefox"
         proc = subprocess.Popen(self.arg_arr)
         print "sleeping..."
         time.sleep(float(self.timeout))
         proc.kill()
         print "Killed process..."
-        lock.release()
 
 if __name__ == '__main__':
     import sys

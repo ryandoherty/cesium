@@ -1,7 +1,17 @@
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from cesium.autoyslow.models import Site, Page, Test
+import datetime
+from urlparse import urlparse
+
 def beacon(request):
-	new_url = request.GET["u"]
-	new_score = request.GET["o"]
-	new_time = datetime.datetime.now()
-	p = Page(url=new_url, overall_score=new_score, run_time=new_time)
-	p.save()
-	return HttpResponseRedirect(reverse('yslow.autoyslow.views.index')) 
+    parsed_url = urlparse(request.GET["u"])
+    new_score = request.GET["o"]
+    new_time = datetime.datetime.now()
+    base_url = parsed_url.netloc
+    url = parsed_url.path
+    site = Site.objects.get(base_url=base_url)
+    page = site.page_set.get(url=url)
+    test = Test(score=new_score, page=page, time=new_time)
+    test.save()
+    return HttpResponseRedirect(reverse('cesium.autoyslow.site_views.index')) 

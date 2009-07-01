@@ -1,50 +1,127 @@
 #!/usr/bin/env python
 
-import threading, socket
+import re
+import threading
+import socket
+import pickle
+import datetime
+from autoyslow import spawnff
 
+from django.core.management import setup_environ
+import settings
+setup_environ(settings)
+
+from autoyslow.models import Site
+
+# This daemon is split into two main threads: a server thread to deal with 
+# IPC from the Django code and an exec thread to handle the actual running 
+# of the Firefox tests.
 class CesiumDaemon(object):
     def __init__(self, port):
-        test_pq = PriorityQueue()
-        serversock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        serversock.bind(('localhost', port))
-        serversock.listen(5)
-        while True:
-            (client_socket, address) = serversock.accept()
-            self.CesiumThread(client_socket).start()
-    
-    class CesiumThread(threading.Thread):
-        def __init__(self, sock):
-            self.client_sock = sock
+        self.pq = PriorityQueue()
+        self.next_test = None
+        self.server_thread = self.ServerThread(port, self)
+        self.server_thread.start()
+ 
+    class ServerThread(threading.Thread):
+        def __init__(self, port, daemon):
             threading.Thread.__init__(self)
-    
+            self.daemon = daemon
+            self.ssock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.ssock.bind(('localhost', port))
+            self.ssock.listen(5)
+ 
         def run(self):
-            client_msg = ''.join(self.recv_til_done())
-            self.send_til_done(client_msg)
-
-        def recv_til_done(self):
-            # the suggested buffer size by the python docs is 4096
-            client_msg = self.client_sock.recv(4096)
-            while client_msg:
-                print "Received %d bytes" % len(client_msg)
-                yield client_msg
+            while True:
+                (client_socket, address) = self.ssock.accept()
+                self.CommThread(self.daemon, client_socket).start()
+   
+        # thread to deal with incoming requests to the daemon 
+        class CommThread(threading.Thread):
+            def __init__(self, daemon, sock):
+                self.client_sock = sock
+                threading.Thread.__init__(self)
+                self.daemon = daemon    
+    
+            def run(self):
+                client_msg = ''.join(self.recv_til_done())
+                blob = pickle.loads(client_msg)
+                self.daemon.pq.push(blob.site_id, blob.new_dt)
+                self.daemon.notify_update()
+                self.client_sock.close()
+    
+            def recv_til_done(self):
+                # the suggested buffer size by the python docs is 4096
                 client_msg = self.client_sock.recv(4096)
-            print "Server receive complete"
-            yield ''
+                while client_msg:
+                    print "Received %d bytes" % len(client_msg)
+                    yield client_msg
+                    client_msg = self.client_sock.recv(4096)
+                print "Server receive complete"
+                yield ''
+    
+            def send_til_done(self, msg):
+                total = 0
+                while total < len(msg):
+                    total += self.client_sock.send(msg[total:])
+                self.client_sock.shutdown(socket.SHUT_WR)
+                print "Server send complete"
+ 
+    # must be called to notify this thread of an update to the test PQ
+    def notify_update(self):
+        print "Received PQ update notification."
+        print "Current PQ: %s" % self.pq
+        next = self.pq.priority_peek()
+        if next == (None, None):
+            print "Nothing in the PQ..."
+            return
 
+        now = datetime.datetime.now()
+        seconds_per_day = 86400  # 24*60*60
+        tdelta = next[1] - now
+        # screw microseconds
+        delay = tdelta.days * seconds_per_day + tdelta.seconds
+        
+        if self.next_test != None:
+            self.next_test.cancel()
+        self.next_test = threading.Timer(delay, self.runtest_wrapper)
+        self.next_test.start()
+        print "Started the next test countdown for %d seconds." % delay
 
-        def send_til_done(self, msg):
-            total = 0
-            while total < len(msg):
-                total += self.client_sock.send(msg[total:])
-            self.client_sock.shutdown(socket.SHUT_WR)
-            print "Server send complete"
+    def notify_complete(self, site_id):
+        self.next_test = None
+        print "Test complete."
+        self.pq.push(site_id, Site.objects.get(id=site_id).next_test_time())
+        self.notify_update()
+
+    # wrapper to hand to the threading.Timer object -- runs whatever is at 
+    # the top of the PQ when it gets executed
+    def runtest_wrapper(self):
+        site_id = self.pq.pop()
+        # this should never happen, but just in case
+        if site_id == None:
+            print "Error in runtest_wrapper(): site_id should not be None"
+            return
+        site = Site.objects.get(id=site_id)
+        pages = [(site.base_url + page.url) for page in site.page_set.all()]
+        spawnff.run_test(pages)
+        self.notify_complete(site_id)
 
 class CesiumClient(object):
     def __init__(self, port):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect(('localhost', port))
 
+    def update_site(self, site_id, new_dt):
+        """Sends the new datetime of the given site's next run to the daemon
+            to update it.
+        """
+        msg = pickle.dumps(DataBlob(site_id, new_dt))
+        self.send_til_done(msg)
+
     def recv(self):
+        to_return = ''.join(self.recv_til_done())
+        self.sock.close()
         return ''.join(self.recv_til_done())   
  
     def send_til_done(self, msg):
@@ -64,6 +141,12 @@ class CesiumClient(object):
         print "Client receive complete"
         yield ''
 
+# class to contain data to pickle for transmission
+class DataBlob(object):
+    def __init__(self, site_id, new_dt):
+        self.site_id = site_id
+        self.new_dt = new_dt
+    
 class PriorityQueue(object):
     """This is a thread-safe priority queue that does not allow duplicate 
     elements, and instead updates the priority of anything that already 
@@ -80,10 +163,20 @@ class PriorityQueue(object):
         self.lock.acquire()
         try:
             if len(self.heap) > 0:
-                item = self.heap[0]
+                item = self.heap[0][0]
         finally:
             self.lock.release()
         return item
+
+    def priority_peek(self):
+        item, priority = None, None
+        self.lock.acquire()
+        try:
+            if len(self.heap) > 0:
+                item, priority = self.heap[0]
+        finally:
+            self.lock.release()
+        return item, priority 
 
     def push(self, item, priority):
         self.lock.acquire()
@@ -144,7 +237,9 @@ class PriorityQueue(object):
             self.heap[root] = elem
             return
         elif child1 >= len(self.heap):
-            p1 = float('inf')
+            # this is very specific to a PQ with datetime as the priority...
+            # suggestions?
+            p1 = datetime.datetime.max
         else:
             p1 = self.heap[child1][1]
         p0 = self.heap[child0][1]
@@ -159,6 +254,9 @@ class PriorityQueue(object):
         else:
             self.heap[root] = elem
             return
+
+    def __str__(self):
+        return str(self.heap)
 
     # this method is just for ensuring that the heap obeyed its invariant 
     # during testing
