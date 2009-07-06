@@ -10,15 +10,13 @@ Cesium - Sites
 
 {% block content %}
 <h2 id="page-title">Sites</h2>
+<a id="add-site" href="{% url cesium.autoyslow.site_views.new_site %}">Add Site</a>
 <ul>
 {% if sites %}
     {% for site in sites %}
     <li>
-        <a href="{% url cesium.autoyslow.site_views.site_info site.id %}">
-        {{ site.base_url }}
-        </a>
         <a href="{% url cesium.autoyslow.site_views.site_data site.id %}">
-        <img src="/site_media/img/icons/chart_line.png" />
+        {{ site.base_url }}
         </a>
     </li>
     {% endfor %}

@@ -89,5 +89,16 @@ div.grid_square {
     border: 2px #ffffff dashed;
 }
 
-.visible {
+#site-info {
+    background-image: url('/site_media/img/icons/pencil.png');
+    background-repeat: no-repeat;
+    padding-left: 16px;
+    float: right;
+}
+
+#remove-site {
+    background-image: url('/site_media/img/icons/delete.png');
+    background-repeat: no-repeat;
+    padding-left: 16px;
+    float: right;
 }

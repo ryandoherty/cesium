@@ -13,5 +13,6 @@ def beacon(request):
     site = Site.objects.get(base_url=base_url)
     page = site.page_set.get(url=url)
     test = Test(score=new_score, page=page, time=new_time)
+    print "Test time: %s" % new_time.ctime()
     test.save()
     return HttpResponseRedirect(reverse('cesium.autoyslow.site_views.index')) 

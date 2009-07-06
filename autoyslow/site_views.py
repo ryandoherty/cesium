@@ -20,13 +20,21 @@ def index(request):
     try:
         comma = "%2C"
         site_order = request.COOKIES['graph_order'].split(comma)
+        site_set = set(int(site_id) for site_id in site_order)
+        for key in site_graphs.keys():
+            if key not in site_set:
+                site_order.append(key)
     except KeyError:
         site_order = site_graphs.keys()
 
     sites = []
     for site_id in site_order:
-        sites.append(site_graphs[int(site_id)])
-    
+        try:
+            sites.append(site_graphs[int(site_id)])
+        # just in case we deleted the site but its still in the cookie
+        except KeyError:
+            continue    
+
     # put dates in right format for JSON transfer
     json_data = dict()
     date_format = "%Y-%m-%d"
@@ -50,7 +58,34 @@ def site_list(request):
         'sites': sites
     });
 
-def site_info(request, site_id):
+def new_site(request):
+    form = SiteForm()
+    return render_to_response("site_info.html", {
+        'form': form
+    });
+    
+def add_site(request):
+    s = Site(base_url=request.POST['base_url'])
+    test_time = datetime.time(
+        hour=int(request.POST['test_time_0']),
+        minute=int(request.POST['test_time_1']),
+        second=0,
+        microsecond=0
+    )
+    freq = request.POST['freq']
+    weekday = request.POST['weekday']
+    s.test_time, s.freq, s.weekday = test_time, freq, weekday
+    s.save()
+    s.save_schedule()
+    return HttpResponseRedirect(reverse('cesium.autoyslow.site_views.site_info', args=(s.id,)))
+    
+def remove_site(request, site_id):
+    s = Site.objects.get(id=site_id)
+    s.delete()
+    return HttpResponseRedirect(
+        reverse('cesium.autoyslow.site_views.site_list'))
+
+def site_info(request, site_id=None):
     site = get_object_or_404(Site, pk=site_id)
     hours = range(1, 13)
     minutes = range(0, 60, 5)
@@ -150,9 +185,10 @@ def remove_page(request, site_id, page_id):
 def site_data(request, site_id):
     site = Site.objects.get(id=site_id)
     id_name_dict = dict((page.id, page.url) for page in site.page_set.all())
-    page_graphs = dict((page.id, [(test.time.ctime(), test.score) for test in page.test_set.all()]) for page in site.page_set.all())
+    page_graphs = dict((page.id, [(time.mktime(test.time.timetuple()), test.score) for test in page.test_set.all()]) for page in site.page_set.all())
     
     return render_to_response('site_data.html', {
+        'site': site,
         'pages': page_graphs,
         'id_name_dict': id_name_dict,
         'json_data': simplejson.dumps(page_graphs)

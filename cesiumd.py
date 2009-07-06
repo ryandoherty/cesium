@@ -198,7 +198,7 @@ class PriorityQueue(object):
             else:
                 self.heap.append((item, priority))
                 self._percolate_up(self.heap[-1], len(self.heap)-1)
-            self.set.add(item)
+                self.set.add(item)
             #self._check_min_heap_invariant()
         finally:
             self.lock.release()

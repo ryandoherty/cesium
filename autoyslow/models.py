@@ -37,7 +37,6 @@ class Site(models.Model):
         # weekly
         if self.freq == 'w':
             # if we've already done a test this week...
-            # TODO: in desperate need of a heavily-scrutinizing code review
             if ((now.hour > self.test_time.hour and
                 now.date().weekday() == self.weekday) or
                 now.date().weekday() > self.weekday or
@@ -103,4 +102,6 @@ class Test(models.Model):
     score = models.IntegerField()
     time = models.DateTimeField('date tested')
     page = models.ForeignKey(Page)
-    
+   
+    def __unicode__(self):
+        return '(%s, %d)' % (self.time.ctime(), self.score)

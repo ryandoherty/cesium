@@ -11,6 +11,10 @@ import time
 # thread to prevent multiple threads from trying to open Firefox at the 
 # same time
 def run_test(page_list):
+    if len(page_list) == 0:
+        time.sleep(60.0);
+        return
+
     # config stuff TODO: this will be pulled out into a config file
     browser_loc = "/usr/bin/firefox"
     loads_per_proc = 10
@@ -28,32 +32,17 @@ def run_test(page_list):
     for i in range((len(page_list) / loads_per_proc)+extra_round):
         args = ["sudo", browser_loc, "-no-remote", "--display=:0"]
         args.extend(page_list[curr_first:(curr_first+loads_per_proc)])
-        proc = subprocess.Popen(self.arg_arr)
+        print "Starting Firefox."
+        proc = subprocess.Popen(args)
+        print "Sleeping..."
         time.sleep(float(loads_per_proc * page_timeout))
+        print "Killing Firefox."
         proc.kill()
-        #test = Test(arg_arr=args, timeout=(loads_per_proc*page_timeout))
-        #test.start()
-        #test.join()
         if curr_first + loads_per_proc > len(page_list):
             loads_per_proc = len(page_list) - curr_first
         else:
             curr_first += loads_per_proc
 
-class Test(threading.Thread):
-    def __init__(self, arg_arr, timeout):
-        self.arg_arr = arg_arr
-        self.timeout = timeout
-        threading.Thread.__init__(self)
-    
-    def run(self):
-        print "Spawning Firefox"
-        proc = subprocess.Popen(self.arg_arr)
-        print "sleeping..."
-        time.sleep(float(self.timeout))
-        proc.kill()
-        print "Killed process..."
-
-if __name__ == '__main__':
-    import sys
-    print "main"
-    run_test(sys.argv[1], sys.argv[2:])
+    # quick fix to keep multiple tests from being scheduled
+    if len(page_list) * loads_per_proc < 60.0:
+        time.sleep(60.0 - (len(page_list) * loads_per_proc))
