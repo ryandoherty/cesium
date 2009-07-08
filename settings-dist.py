@@ -35,7 +35,7 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '/Users/mhahnenberg/Desktop/cesium/trunk/cesium/media'
+MEDIA_ROOT = 'EDIT THIS'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -48,7 +48,7 @@ MEDIA_URL = ''
 ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'c53vf8$q-r$^djo$=)0+-8u-djq)b9bdq2sl=+ib$72wf20&p&'
+SECRET_KEY = ''
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -66,7 +66,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'cesium.urls'
 
 TEMPLATE_DIRS = (
-    "/Users/mhahnenberg/Desktop/cesium/trunk/cesium/templates"
+    "EDIT THIS"
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -79,6 +79,3 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'cesium.autoyslow'
 )
-
-# this is the port the scheduling daemon will run on
-AUTOYSLOW_DAEMON_PORT = 8003

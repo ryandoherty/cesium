@@ -1,11 +1,8 @@
 from django.db import models
 from django.db import connection, transaction
 from datetime import datetime, timedelta
+from django.conf import settings
 import string
-import os
-import sys
-sys.path.append("..")
-import cesiumd
 
 class Site(models.Model):
     base_url = models.CharField(max_length=100)
@@ -67,12 +64,6 @@ class Site(models.Model):
             raise (ValueError, 
                 "Database corruption: invalid freq: %s" % self.freq)
 
-    def save_schedule(self):
-        # TODO: move this into the config file
-        port = 8001
-        
-        client = cesiumd.CesiumClient(port)
-        client.update_site(self.id, self.next_test_time())        
 
 # returns a list of dicts containing score, site_id, date, base_url keys
 def get_site_averages():
@@ -81,7 +72,7 @@ def get_site_averages():
     INNER JOIN autoyslow_page ON autoyslow_test.page_id=autoyslow_page.id 
     INNER JOIN autoyslow_site ON autoyslow_page.site_id=autoyslow_site.id 
     WHERE DATE(autoyslow_test.time)
-    BETWEEN DATE('now', '-14 days') AND DATE('now')
+    BETWEEN DATE_SUB(NOW(), INTERVAL '2' DAY) AND DATE(NOW())
     GROUP BY autoyslow_site.id, DATE(autoyslow_test.time)
     ORDER BY autoyslow_site.id"""
 

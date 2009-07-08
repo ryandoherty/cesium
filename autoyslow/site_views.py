@@ -2,6 +2,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.core import serializers
+from django.conf import settings
 from cesium.autoyslow.models import Site, Page, Test, get_site_averages
 import spawnff
 import time
@@ -9,6 +10,7 @@ import datetime
 from django.utils import simplejson
 import itertools
 from django import forms
+import cesiumd
 
 def index(request):
     data = get_site_averages()
@@ -76,7 +78,7 @@ def add_site(request):
     weekday = request.POST['weekday']
     s.test_time, s.freq, s.weekday = test_time, freq, weekday
     s.save()
-    s.save_schedule()
+    save_schedule(s)
     return HttpResponseRedirect(reverse('cesium.autoyslow.site_views.site_info', args=(s.id,)))
     
 def remove_site(request, site_id):
@@ -166,8 +168,12 @@ def update_site(request, site_id):
     weekday = request.POST['weekday']
     s.test_time, s.freq, s.weekday = test_time, freq, weekday
     s.save()
-    s.save_schedule()
+    save_schedule(s)
     return HttpResponseRedirect(reverse('cesium.autoyslow.site_views.site_info', args=(site_id,)))
+    
+def save_schedule(site):
+    client = cesiumd.CesiumClient(settings.AUTOYSLOW_DAEMON_PORT)
+    client.update_site(site.id, site.next_test_time())        
 
 def add_page(request, site_id):
     url = request.POST['url']

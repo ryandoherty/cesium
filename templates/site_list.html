@@ -10,7 +10,9 @@ Cesium - Sites
 
 {% block content %}
 <h2 id="page-title">Sites</h2>
+<div id="mininav">
 <a id="add-site" href="{% url cesium.autoyslow.site_views.new_site %}">Add Site</a>
+</div>
 <ul>
 {% if sites %}
     {% for site in sites %}

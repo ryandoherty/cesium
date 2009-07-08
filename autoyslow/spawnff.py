@@ -16,7 +16,7 @@ def run_test(page_list):
         return
 
     # config stuff TODO: this will be pulled out into a config file
-    browser_loc = "/usr/bin/firefox"
+    browser_loc = "/Applications/Firefox.app/Contents/MacOS/firefox"
     loads_per_proc = 10
     page_timeout = 15    # per web page
 
@@ -30,7 +30,7 @@ def run_test(page_list):
         # iterate through, loading loads_per_proc number of pages per go around
     curr_first = 0
     for i in range((len(page_list) / loads_per_proc)+extra_round):
-        args = ["sudo", browser_loc, "-no-remote", "--display=:0"]
+        args = [browser_loc, "-no-remote", "--display=:0"]
         args.extend(page_list[curr_first:(curr_first+loads_per_proc)])
         print "Starting Firefox."
         proc = subprocess.Popen(args)

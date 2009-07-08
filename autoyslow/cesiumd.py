@@ -5,22 +5,24 @@ import threading
 import socket
 import pickle
 import datetime
-from autoyslow import spawnff
+import spawnff
+import os
+import sys
 
-from django.core.management import setup_environ
-import settings
-setup_environ(settings)
+sys.path.append('..')
+os.environ['DJANGO_SETTINGS_MODULE'] = 'cesium.settings'
+import cesium.settings
+from cesium.autoyslow.models import Site
 
-from autoyslow.models import Site
 
-# This daemon is split into two main threads: a server thread to deal with 
-# IPC from the Django code and an exec thread to handle the actual running 
-# of the Firefox tests.
-class CesiumDaemon(object):
+class CesiumDaemon(threading.Thread):
     def __init__(self, port):
+        threading.Thread.__init__(self)
         self.pq = PriorityQueue()
         self.next_test = None
         self.server_thread = self.ServerThread(port, self)
+    
+    def run(self):    
         self.server_thread.start()
  
     class ServerThread(threading.Thread):
@@ -276,3 +278,6 @@ class PriorityQueue(object):
         else:
             self._check_min_heap_invariant(child0)
             return self._check_min_heap_invariant(child1)
+
+if __name__ == '__main__':
+    CesiumDaemon(cesium.settings.AUTOYSLOW_DAEMON_PORT).start()

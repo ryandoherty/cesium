@@ -18,3 +18,9 @@
     text-align: center;
     width: 600px;
 }
+
+#mininav {
+    white-space: nowrap;
+    position: absolute;
+    left: 65%;
+}
