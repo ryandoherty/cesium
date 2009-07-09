@@ -79,3 +79,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'cesium.autoyslow'
 )
+
+# this is the port the scheduling daemon will run on
+AUTOYSLOW_DAEMON_PORT = 8003
