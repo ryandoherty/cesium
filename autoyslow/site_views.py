@@ -43,8 +43,9 @@ def index(request):
     for key in site_graphs.keys():
         json_data[key] = []
         for entry in site_graphs[key]:
-            date_ms = time.mktime(datetime.datetime.strptime(entry['date'], date_format).timetuple())
-            json_data[key].append([date_ms, entry['score']])
+            date_ms = time.mktime(entry['date'].timetuple())
+            print date_ms
+            json_data[key].append([date_ms, int(entry['score'])])
     json_data = simplejson.dumps(json_data)
 
     return render_to_response("dashboard.html", {
