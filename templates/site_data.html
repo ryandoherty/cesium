@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}
+Cesium - Site Data
+{% endblock title %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="/site_media/css/index.css" />
+{% endblock style %}
+
+{% block content %}
+<h2 id="page-title">{{ site.base_url }}</h2>
+<div id="mininav">
+    <a id="site-info" href="{% url cesium.autoyslow.site_views.site_info site.id %}">Edit Site Settings</a>
+    <a id="remove-site" href="{% url cesium.autoyslow.site_views.remove_site site.id %}">Remove Site</a>
+</div>
+<ul id="content">
+{% if pages %}
+    {% load extra_tags %}
+    {% for id,data in pages.items %}
+        {% with id_name_dict|lookup:id as label %}
+        <li id="{{ id }}">
+        <!-- TODO: refactor site_label as just regular label in CSS -->
+        <div id="label{{ id }}" class="site_label">{{ label }}</div>
+        <div id="graph{{ id }}" class="graph"></div>
+        </li>
+        {% endwith %}
+    {% endfor %}
+{% else %}
+    <li>You have no Pages to display.</li>
+{% endif %}
+</ul>
+{% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript" src="/site_media/js/graph.js"></script>
+<script type="text/javascript" src="/site_media/js/warning.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    var data = {{ json_data|safe }};
+    var graphs = new Graphs();
+    graphs.display(data, [1, "hour"]);
+    var fx = new PageFX();
+    fx.bindEffects();
+    var warning = new Warning();
+    warning.addWarning('#remove-site');
+});
+</script>
+{% endblock scripts %} 
