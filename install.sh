@@ -33,7 +33,7 @@ echo "--> Installing setuptools..."
 sudo sh install/setuptools-0.6c9-py2.6.egg
 
 echo "--> Installing virtualenv..."
-easy_install virtualenv
+sudo easy_install virtualenv
 
 echo "--> Setting up virtual environment..."
 virtualenv --no-site-packages virtual_env
