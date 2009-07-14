@@ -283,5 +283,4 @@ class PriorityQueue(object):
             return self._check_min_heap_invariant(child1)
 
 if __name__ == '__main__':
-    with DaemonContext():
-        CesiumDaemon(cesium.settings.AUTOYSLOW_DAEMON_PORT).start()
+    CesiumDaemon(cesium.settings.AUTOYSLOW_DAEMON_PORT).start()
