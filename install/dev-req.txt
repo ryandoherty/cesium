@@ -1,4 +1,3 @@
 Django==1.0.2-final
 MySQL-python==1.2.3c1
-ipython==0.9.1
 wsgiref==0.1.2
