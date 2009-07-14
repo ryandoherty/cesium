@@ -30,7 +30,7 @@ mv install/yslow ${PROF_PATH}/extensions/${EXT_PATH}
 
 # setup Python environment
 echo "--> Installing setuptools..."
-sh install/setuptools-0.6c9-py2.6.egg
+sudo sh install/setuptools-0.6c9-py2.6.egg
 
 echo "--> Installing virtualenv..."
 easy_install virtualenv
