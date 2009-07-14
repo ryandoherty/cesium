@@ -8,7 +8,7 @@ import datetime
 import spawnff
 import os
 import sys
-import daemon
+from daemon import DaemonContext
 
 sys.path.append('..')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'cesium.settings'
@@ -283,5 +283,5 @@ class PriorityQueue(object):
             return self._check_min_heap_invariant(child1)
 
 if __name__ == '__main__':
-    daemon.DaemonContext().open()
-    CesiumDaemon(cesium.settings.AUTOYSLOW_DAEMON_PORT).start()
+    with DaemonContext():
+        CesiumDaemon(cesium.settings.AUTOYSLOW_DAEMON_PORT).start()
