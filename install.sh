@@ -46,4 +46,8 @@ easy_install -q pip
 echo "--> Installing pip requirements file..."
 pip install -q -r install/dev-req.txt
 
+# setup other misc. things
+echo "--> Copying settings..."
+cp settings-dist.py settings.py
+
 echo "--> Done!"
