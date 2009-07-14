@@ -8,6 +8,7 @@ import datetime
 import spawnff
 import os
 import sys
+import daemon
 
 sys.path.append('..')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'cesium.settings'
