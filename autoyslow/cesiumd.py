@@ -26,9 +26,9 @@ class CesiumDaemon(threading.Thread):
         self.server_thread.start()
  
     class ServerThread(threading.Thread):
-        def __init__(self, port, daemon):
+        def __init__(self, port, scheduler):
             threading.Thread.__init__(self)
-            self.daemon = daemon
+            self.scheduler = scheduler 
             self.ssock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.ssock.bind(('localhost', port))
             self.ssock.listen(5)
@@ -36,20 +36,20 @@ class CesiumDaemon(threading.Thread):
         def run(self):
             while True:
                 (client_socket, address) = self.ssock.accept()
-                self.CommThread(self.daemon, client_socket).start()
+                self.CommThread(self.scheduler, client_socket).start()
    
         # thread to deal with incoming requests to the daemon 
         class CommThread(threading.Thread):
-            def __init__(self, daemon, sock):
+            def __init__(self, scheduler, sock):
                 self.client_sock = sock
                 threading.Thread.__init__(self)
-                self.daemon = daemon    
+                self.scheduler = scheduler    
     
             def run(self):
                 client_msg = ''.join(self.recv_til_done())
                 blob = pickle.loads(client_msg)
-                self.daemon.pq.push(blob.site_id, blob.new_dt)
-                self.daemon.notify_update()
+                self.scheduler.pq.push(blob.site_id, blob.new_dt)
+                self.scheduler.notify_update()
                 self.client_sock.close()
     
             def recv_til_done(self):
@@ -283,4 +283,5 @@ class PriorityQueue(object):
             return self._check_min_heap_invariant(child1)
 
 if __name__ == '__main__':
-    CesiumDaemon(cesium.settings.AUTOYSLOW_DAEMON_PORT).start()
+    with DaemonContext():
+        CesiumDaemon(cesium.settings.AUTOYSLOW_DAEMON_PORT).start()
