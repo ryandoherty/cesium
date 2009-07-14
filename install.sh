@@ -33,7 +33,7 @@ echo "--> Installing setuptools..."
 sudo sh install/setuptools-0.6c9-py2.6.egg
 
 echo "--> Installing virtualenv..."
-sudo easy_install virtualenv
+sudo easy_install -q virtualenv
 
 echo "--> Setting up virtual environment..."
 virtualenv --no-site-packages virtual_env
@@ -41,9 +41,9 @@ echo "--> Running virtual environment..."
 source virtual_env/bin/activate
 
 echo "--> Installing pip..."
-easy_install pip
+easy_install -q pip
 
 echo "--> Installing pip requirements file..."
-pip install -r install/dev-req.txt
+pip install -q -r install/dev-req.txt
 
 echo "--> Done!"
