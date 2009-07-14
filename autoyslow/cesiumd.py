@@ -14,7 +14,6 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'cesium.settings'
 import cesium.settings
 from cesium.autoyslow.models import Site
 
-
 class CesiumDaemon(threading.Thread):
     def __init__(self, port):
         threading.Thread.__init__(self)
@@ -148,7 +147,10 @@ class DataBlob(object):
     def __init__(self, site_id, new_dt):
         self.site_id = site_id
         self.new_dt = new_dt
-    
+
+# TODO: since we're using Python 2.6 now, which does include a PriorityQueue
+# class, we might want to look into getting rid of this class in favor of 
+# something built into the language 
 class PriorityQueue(object):
     """This is a thread-safe priority queue that does not allow duplicate 
     elements, and instead updates the priority of anything that already 
@@ -280,4 +282,5 @@ class PriorityQueue(object):
             return self._check_min_heap_invariant(child1)
 
 if __name__ == '__main__':
+    daemon.DaemonContext().open()
     CesiumDaemon(cesium.settings.AUTOYSLOW_DAEMON_PORT).start()
