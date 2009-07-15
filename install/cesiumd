@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# these should be set by the setup script
+CESIUM_PATH=/home/mhahnenberg/Desktop/cesium/cesium
+DAEMON_PATH=${CESIUM_PATH}/autoyslow/cesiumd.py
+
+case ${1} in
+"start")
+	echo "Starting Cesium Scheduling Daemon..."
+	source ${CESIUM_PATH}/virtual_env/bin/activate
+	cd ${CESIUM_PATH}
+	python manage.py cesiumd
+	;;
+"stop")
+	echo "Stopping Cesium Scheduling Daemon..."
+	# perhaps a little bit overkill...
+	pkill python
+	;;
+esac

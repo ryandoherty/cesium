@@ -49,5 +49,16 @@ pip install -q -r install/dev-req.txt
 # setup other misc. things
 echo "--> Copying settings..."
 cp settings-dist.py settings.py
+cp autoyslow/settings-dist.py autoyslow/settings.py
+
+# register daemon
+echo "--> Setting up scheduling daemon..."
+# only works with update-rc.d currently
+if [ `which update-rc.d` != "" ]
+then
+    sudo cp install/cesiumd /etc/init.d/cesiumd
+    update-rc.d /etc/init.d/cesiumd defaults
+    sudo /etc/init.d/cesiumd start
+fi
 
 echo "--> Done!"
