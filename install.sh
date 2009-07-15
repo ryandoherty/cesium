@@ -54,10 +54,11 @@ cp autoyslow/settings-dist.py autoyslow/settings.py
 # register daemon
 echo "--> Setting up scheduling daemon..."
 # only works with update-rc.d currently
+# TODO: make the path in cesiumd correct somehow
 if [ `which update-rc.d` != "" ]
 then
     sudo cp install/cesiumd /etc/init.d/cesiumd
-    update-rc.d /etc/init.d/cesiumd defaults
+    sudo update-rc.d cesiumd defaults
     sudo /etc/init.d/cesiumd start
 fi
 
