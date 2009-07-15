@@ -10,7 +10,7 @@ import datetime
 from django.utils import simplejson
 import itertools
 from django import forms
-import cesiumd
+import management.commands.cesiumd
 
 def index(request):
     data = get_site_averages()
