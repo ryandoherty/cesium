@@ -3,12 +3,7 @@
 import threading
 import subprocess
 import time
-
-import os
-import sys
-sys.path.append('..')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'cesium.settings'
-import cesium.settings
+import settings
 
 # Since each site could potentially load hundreds of pages, this code loads 
 # ten pages in a single instance of Firefox, kills that instance, then 
@@ -22,9 +17,9 @@ def run_test(page_list):
         return
 
     # config stuff TODO: this will be pulled out into a config file
-    browser_loc = cesium.settings.BROWSER_LOC
-    loads_per_proc = cesium.settings.LOADS_PER_PROC
-    page_timeout = cesium.settings.PAGE_TIMEOUT    # per web page
+    browser_loc = settings.BROWSER_LOC
+    loads_per_proc = settings.LOADS_PER_PROC
+    page_timeout = settings.PAGE_TIMEOUT    # per web page
 
     # figure out the exact bounds on how many times we have to iterate
     extra_round = 0

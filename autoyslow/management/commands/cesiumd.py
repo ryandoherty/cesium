@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 
-import re
 import threading
 import socket
 import pickle
 import datetime
-import spawnff
-import os
-import sys
 from daemon import DaemonContext
+from autoyslow import spawnff
+from django.core.management.base import BaseCommand
 
-sys.path.append('..')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'cesium.settings'
-import cesium.settings
-from cesium.autoyslow.models import Site
+class Command(BaseCommand):
+    def handle(self, *args, **options):
+        with DaemonContext():
+            CesiumDaemon(cesium.settings.AUTOYSLOW_DAEMON_PORT).start()
+        
 
 class CesiumDaemon(threading.Thread):
     def __init__(self, port):
@@ -281,7 +280,3 @@ class PriorityQueue(object):
         else:
             self._check_min_heap_invariant(child0)
             return self._check_min_heap_invariant(child1)
-
-if __name__ == '__main__':
-    with DaemonContext():
-        CesiumDaemon(cesium.settings.AUTOYSLOW_DAEMON_PORT).start()

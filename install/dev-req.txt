@@ -1,3 +1,5 @@
 Django==1.0.2-final
 MySQL-python==1.2.3c1
+lockfile==0.8
+python-daemon==1.4.6
 wsgiref==0.1.2
