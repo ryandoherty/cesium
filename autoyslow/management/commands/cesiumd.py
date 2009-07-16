@@ -6,12 +6,14 @@ import pickle
 import datetime
 from daemon import DaemonContext
 from autoyslow import spawnff
+from autoyslow.models import Site
 from django.core.management.base import BaseCommand
+from django.conf import settings
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         with DaemonContext():
-            CesiumDaemon(cesium.settings.AUTOYSLOW_DAEMON_PORT).start()
+            CesiumDaemon(settings.AUTOYSLOW_DAEMON_PORT).start()
         
 
 class CesiumDaemon(threading.Thread):
