@@ -19,6 +19,10 @@ class CesiumDaemon(threading.Thread):
         threading.Thread.__init__(self)
         self.pq = PriorityQueue()
         self.next_test = None
+        sites = Site.objects.all()
+        for site in sites:
+            self.pq.push(site.id, site.next_test_time())
+        self.notify_update()
         self.server_thread = self.ServerThread(port, self)
     
     def run(self):    
