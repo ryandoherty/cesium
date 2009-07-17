@@ -31,7 +31,7 @@ def run_test(page_list):
         # iterate through, loading loads_per_proc number of pages per go around
     curr_first = 0
     for i in range((len(page_list) / loads_per_proc)+extra_round):
-        args = [browser_loc, "-P", "default", "-no-remote", "--display=:0"]
+        args = [browser_loc, "-P", "cesium", "-no-remote", "--display=:0"]
         args.extend(page_list[curr_first:(curr_first+loads_per_proc)])
         print "Starting Firefox."
         proc = subprocess.Popen(args)
