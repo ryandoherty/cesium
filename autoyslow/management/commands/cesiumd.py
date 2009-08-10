@@ -4,6 +4,7 @@ import threading
 import socket
 import pickle
 import datetime
+import subprocess
 from daemon import DaemonContext
 from autoyslow import spawnff
 from autoyslow.models import Site
@@ -21,12 +22,18 @@ class CesiumDaemon(threading.Thread):
         threading.Thread.__init__(self)
         self.pq = PriorityQueue()
         self.next_test = None
+
+        # query for sites that are already in the database
         sites = Site.objects.all()
         for site in sites:
             self.pq.push(site.id, site.next_test_time())
         self.notify_update()
+
         self.server_thread = self.ServerThread(port, self)
     
+        # start the vnc server
+        vnc = subprocess.Popen(['/usr/bin/vncserver'])
+
     def run(self):    
         self.server_thread.start()
  
