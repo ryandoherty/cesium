@@ -125,3 +125,7 @@ Create a symlink for the Apache configuration file:
 
 Restart Apache
 #: sudo /etc/rc.d/init.d/httpd restart
+
+Sync the Database tables for Cesium:
+#: cd /a/cesium/trunk/cesium
+#: python manage.py syncdb --noinput
