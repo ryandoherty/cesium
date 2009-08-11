@@ -7,7 +7,7 @@ site.addsitedir('/a/cesium/trunk/')
 site.addsitedir('/a/cesium/trunk/cesium/')
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'cesium.settings'
-os.environ['DJANGO_ENVIRONMENT']     = 'prod'
+os.environ['PYTHON_EGG_CACHE']     = '/tmp/'
 
 sys.stdout = sys.stderr
 
