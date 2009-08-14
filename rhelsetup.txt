@@ -16,10 +16,10 @@ Install Firefox (requires RHN repo)
 Install X Windows (requires RHN repo)
 #: sudo yum install xorg-x11-server-Xorg
 
-Install zlib-devel (requires RHN)
+Install zlib-devel (requires RHN repo)
 #: sudo yum install zlib-devel
 
-Install mysql (requires RHN) TODO: see if this is necessary for MySQL-python
+Install mysql (requires RHN repo)
 #: sudo yum install mysql
 
 Create the cesium user and database on the MySQL server:
@@ -28,10 +28,10 @@ mysql> CREATE USER 'cesium'@'localhost' IDENTIFIED BY 'cesium';
 mysql> GRANT ALL PRIVILEGES ON cesium.* TO 'cesium'@'localhost' WITH GRANT OPTION;
 mysql> CREATE DATABASE cesium;
 
-Install subversion
+Install subversion (requires RHN repo)
 #: sudo yum install subversion
 
-Install httpd (if it isn't already installed) and httpd-devel
+Install httpd (if it isn't already installed) and httpd-devel (requires RHN repo)
 #: sudo yum install httpd httpd-devel
 
 Build Python 2.6.2
@@ -66,8 +66,6 @@ Build mod_wsgi
 
 Create a directory for Apache error log files:
 #: sudo mkdir /var/log/httpd/cesium
-
-Edit the Apache configuration file to load mod_wsgi:
 
 Install virtualenv
 #: sudo easy_install virtualenv
