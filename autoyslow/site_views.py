@@ -2,6 +2,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.template import RequestContext
 from cesium.autoyslow.models import Site, Page, Test
 import time
 import datetime
@@ -9,19 +10,26 @@ from django.utils import simplejson
 from django import forms
 
 def index(request):
-    return render_to_response("index.html", {})
+    return render_to_response("index.html", 
+        {},
+        context_instance=RequestContext(request)
+    )
         
 @login_required
 def site_detail(request, site_id):
     site = get_object_or_404(Site, id=site_id)
-    return render_to_response("site_detail.html", 
-        format_detail_dict(site, request.user)) 
+    return render_to_response("autoyslow/site_detail.html", 
+        format_detail_dict(site, request.user),
+        context_instance=RequestContext(request)
+    ) 
 
 @login_required
 def page_detail(request, page_id):
     page = get_object_or_404(Page, id=page_id)
-    return render_to_response("page_detail.html", 
-        format_detail_dict(page, request.user)) 
+    return render_to_response("autoyslow/page_detail.html", 
+        format_detail_dict(page, request.user),
+        context_instance=RequestContext(request)
+    )
 
 class JSONDatetimeEncoder(simplejson.JSONEncoder):
     def default(self, o):
@@ -52,9 +60,11 @@ def format_detail_dict(obj, user):
 
 def new_site(request):
     form = SiteForm()
-    return render_to_response("site_info.html", {
-        'form': form
-    });
+    return render_to_response(
+        "site_info.html", 
+        {'form': form},
+        context_instance=RequestContext(request)
+    );
     
 def add_site(request):
     s = Site(base_url=request.POST['base_url'])
@@ -82,12 +92,15 @@ def site_info(request, site_id=None):
     hours = range(1, 13)
     minutes = range(0, 60, 5)
     form = SiteForm(instance=site)
-    return render_to_response("site_info.html", {
-        'site': site,
-        'hours': hours,
-        'minutes': minutes,
-        'form': form
-    });
+    return render_to_response("site_info.html", 
+        {
+            'site': site,
+            'hours': hours,
+            'minutes': minutes,
+            'form': form
+        },
+        context_instance=RequestContext(request)
+    )
 
 class SelectTimeWidget(forms.widgets.MultiWidget):
     def __init__(self, attrs=None):
@@ -151,9 +164,12 @@ def site_data(request, site_id):
     id_name_dict = dict((page.id, page.url) for page in site.page_set.all())
     page_graphs = dict((page.id, [(time.mktime(test.time.timetuple()), test.score) for test in page.test_set.all()]) for page in site.page_set.all())
     
-    return render_to_response('site_data.html', {
-        'site': site,
-        'pages': page_graphs,
-        'id_name_dict': id_name_dict,
-        'json_data': simplejson.dumps(page_graphs)
-    })
+    return render_to_response('site_data.html', 
+        {
+            'site': site,
+            'pages': page_graphs,
+            'id_name_dict': id_name_dict,
+            'json_data': simplejson.dumps(page_graphs)
+        },
+        context_instance=RequestContext(request)
+    )
