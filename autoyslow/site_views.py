@@ -1,65 +1,54 @@
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.core import serializers
-from django.conf import settings
-from cesium.autoyslow.models import Site, Page, Test, get_site_averages
-import spawnff
+from django.contrib.auth.decorators import login_required
+from cesium.autoyslow.models import Site, Page, Test
 import time
 import datetime
 from django.utils import simplejson
-import itertools
 from django import forms
-from management.commands import cesiumd
 
 def index(request):
-    data = get_site_averages()
-    
-    # group into sites
-    site_graphs = dict((id, list(it)) for (id, it) in itertools.groupby(data, lambda x: x['site_id']))
-    
-    # get any cookies...omnomnom
-    try:
-        comma = "%2C"
-        site_order = request.COOKIES['graph_order'].split(comma)
-        site_set = set(int(site_id) for site_id in site_order)
-        for key in site_graphs.keys():
-            if key not in site_set:
-                site_order.append(key)
-    except KeyError:
-        site_order = site_graphs.keys()
+    return render_to_response("index.html", {})
+        
+@login_required
+def site_detail(request, site_id):
+    site = get_object_or_404(Site, id=site_id)
+    return render_to_response("site_detail.html", 
+        format_detail_dict(site, request.user)) 
 
-    sites = []
-    for site_id in site_order:
-        try:
-            sites.append(site_graphs[int(site_id)])
-        # just in case we deleted the site but its still in the cookie
-        except KeyError:
-            continue    
+@login_required
+def page_detail(request, page_id):
+    page = get_object_or_404(Page, id=page_id)
+    return render_to_response("page_detail.html", 
+        format_detail_dict(page, request.user)) 
 
-    # put dates in right format for JSON transfer
-    json_data = dict()
-    date_format = "%Y-%m-%d"
-    for key in site_graphs.keys():
-        json_data[key] = []
-        for entry in site_graphs[key]:
-            date_ms = time.mktime(entry['date'].timetuple())
-            print date_ms
-            json_data[key].append([date_ms, int(entry['score'])])
-    json_data = simplejson.dumps(json_data)
+class JSONDatetimeEncoder(simplejson.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime.datetime):
+            epoch_start = datetime.datetime.utcfromtimestamp(0)
+            diff = o - epoch_start
+            return (diff.days * 3600 + diff.seconds) * 1000
+        elif isinstance(o, datetime.date):
+            epoch_start = datetime.datetime.utcfromtimestamp(0)
+            diff = (datetime.datetime.combine(o, datetime.time(0, 0, 0)) - 
+                epoch_start)
+            return (diff.days * 3600 + diff.seconds) * 1000
+        return simplejson.JSONEncoder.default(self, o)
 
-    return render_to_response("dashboard.html", {
-        'data': data, 
-        'json_data': json_data,
-        'site_graphs': site_graphs,
-        'sites': sites
-    })
-
-def site_list(request):
-    sites = Site.objects.all()
-    return render_to_response("site_list.html", {
-        'sites': sites
-    });
+def format_detail_dict(obj, user):
+    """Utility function for the Site and Page detail views"""
+    header = obj.header(user)
+    stats = obj.statistics(user)
+    graph = obj.graph(user)
+    return {
+        'header': header,
+        'header_json': simplejson.dumps(header, cls=JSONDatetimeEncoder),
+        'statistics': stats,
+        'statistics_json': simplejson.dumps(stats, cls=JSONDatetimeEncoder),
+        'graph': graph,
+        'graph_json': simplejson.dumps(graph, cls=JSONDatetimeEncoder)
+    }
 
 def new_site(request):
     form = SiteForm()
@@ -143,38 +132,6 @@ class SiteForm(forms.ModelForm):
     class Meta:
         model = Site
         exclude = ('base_url',)
-
-def test_list(request):
-    tests = get_upcoming_tests()
-    return render_to_response("test_list.html", {
-        'tests': tests
-    });
-
-def get_upcoming_tests():
-    now = datetime.datetime.now()
-    sites = [(site.time_til_next_test(now)+now, site)\
-        for site in Site.objects.all()]
-    sites.sort()
-    return sites
-
-def update_site(request, site_id):
-    s = Site.objects.get(id=site_id)
-    test_time = datetime.time(
-        hour=int(request.POST['test_time_0']),
-        minute=int(request.POST['test_time_1']),
-        second=0,
-        microsecond=0
-    )
-    freq = request.POST['freq']
-    weekday = request.POST['weekday']
-    s.test_time, s.freq, s.weekday = test_time, freq, weekday
-    s.save()
-    save_schedule(s)
-    return HttpResponseRedirect(reverse('cesium.autoyslow.site_views.site_info', args=(site_id,)))
-    
-def save_schedule(site):
-    client = cesiumd.CesiumClient(settings.AUTOYSLOW_DAEMON_PORT)
-    client.update_site(site.id, site.next_test_time())        
 
 def add_page(request, site_id):
     url = request.POST['url']

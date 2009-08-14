@@ -1,6 +1,12 @@
 Cesium 0.1
 
-Note: The Python dependencies listed below will be installed inside a 
+Note: This script is for installing versions of Cesium prior to 1.0.  If 
+you are using Ubuntu, the installation instructions in this README are 
+automated in the script "install.sh" in the main directory.  If you are 
+trying to setup newer versions of Cesium (e.g. 1.0) on Red Hat Linux, 
+there are instructions in "rhelsetup.txt".
+
+The Python dependencies listed below will be installed inside a 
 virtual environment using virtualenv if you choose to use virtualenv 
 (which is recommended).  So you should REALLY know what you're doing if 
 you choose to satisfy the dependencies without consulting the 

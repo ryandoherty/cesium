@@ -1,93 +1,158 @@
 from django.db import models
-from django.db import connection, transaction
-from datetime import datetime, timedelta
-from django.conf import settings
-import string
+from django.contrib.auth.models import User
 
 class Site(models.Model):
     base_url = models.CharField(max_length=100)
-    freq = models.CharField(max_length=1, choices=(
-        ('h', 'Hourly'),
-        ('d', 'Daily'),
-        ('w', 'Weekly'),
-    ))
-    test_time = models.TimeField()
-    weekday = models.SmallIntegerField(choices=(
-        (0, 'Monday'),
-        (1, 'Tuesday'),
-        (2, 'Wednesday'),
-        (3, 'Thursday'),
-        (4, 'Friday'),
-        (5, 'Saturday'),
-        (6, 'Sunday')
-    ))
-
+    last_testrun = models.DateTimeField(null=True)
+    
     def __unicode__(self):
         return self.base_url
 
-    def next_test_time(self):
-        now = datetime.now()
-        return now + self.time_til_next_test(now)
+    def __eq__(self, site):
+        return self.base_url == site.base_url
 
-    def time_til_next_test(self, now):
-        days = hours = minutes = 0
-        # weekly
-        if self.freq == 'w':
-            # if we've already done a test this week...
-            if ((now.hour > self.test_time.hour and
-                now.date().weekday() == self.weekday) or
-                now.date().weekday() > self.weekday or
-                (now.hour == self.test_time.hour and
-                now.date().weekday() == self.weekday and
-                now.minute > self.test_time.minute)):
-                days = 6 - now.date().weekday() + self.weekday
-            else:
-                days = int(self.weekday) - now.date().weekday()
-        # daily 
-        if self.freq == 'w' or self.freq == 'd':
-            # if we've already done a test today...
-            if (now.hour > self.test_time.hour or
-                (now.hour == self.test_time.hour and
-                now.minute > self.test_time.minute)): 
-                hours = 23 - now.hour + self.test_time.hour
-            else:
-                hours = self.test_time.hour - now.hour
-        # hourly
-        if self.freq == 'w' or self.freq == 'd' or self.freq == 'h':
-            # if we've already done a test this hour...
-            if now.minute > self.test_time.minute:
-                minutes = 59 - now.minute + self.test_time.minute
-            else:
-                minutes = self.test_time.minute - now.minute
-            return timedelta(days=days, hours=hours, minutes=minutes)
-        else:
-            raise (ValueError, 
-                "Database corruption: invalid freq: %s" % self.freq)
+    def graph(self, user):
+        """Return a dictionary of data for Site graphs.
 
+        Current information included in dictionary:
+        'score': the average of all ySlow scores for Pages of a Site by day
+    
+        Future information to include:
+        'speed': average load time for Pages of a Site by day
+        'size': average page size for Pages of a Site by day
+        'requests': average number of requests for Pages of a Site by day
+        """
+        return {
+            'score': [(date, avg_test_list(tests)) 
+                for date, tests in self.group_tests_by_date(user).items()]
+        }
 
-# returns a list of dicts containing score, site_id, date, base_url keys
-def get_site_averages():
-    sql = """SELECT AVG(autoyslow_test.score), autoyslow_site.id,
-    DATE(autoyslow_test.time),autoyslow_site.base_url FROM autoyslow_test 
-    INNER JOIN autoyslow_page ON autoyslow_test.page_id=autoyslow_page.id 
-    INNER JOIN autoyslow_site ON autoyslow_page.site_id=autoyslow_site.id 
-    WHERE DATE(autoyslow_test.time)
-    BETWEEN DATE_SUB(NOW(), INTERVAL '2' DAY) AND DATE(NOW())
-    GROUP BY autoyslow_site.id, DATE(autoyslow_test.time)
-    ORDER BY autoyslow_site.id"""
+    def group_tests_by_date(self, user):
+        """Get data from Site in a dict like {date: [Test, ...], ...}"""
+        dates = {}
+        for page in self.get_pages_for_user(user):
+            for test in page.test_set.all():
+                dates.setdefault(test.time.date(), []).append(test)
+        return dates
 
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    # order of labels is important -- it matches the order of the sql query
-    labels = ['score', 'site_id', 'date', 'base_url']
-    return [dict(zip(labels, row)) for row in cursor.fetchall()]
+    def header(self, user):
+        """Get basic info about the Site and return it in a dictionary.
+    
+        Current information included in dictionary:
+        'score': the current average of ySlow scores for Pages on the Site
+        'last_run': the datetime of the last testrun for this Site
+        """
+        header = {
+            'score': self.avg_score(user), 
+            'last_run': self.last_testrun 
+        }
+        return header
+    
+    def statistics(self, user):
+        """Get stats about the Site and and return them in a dictionary.
+        
+        Current stats included in dictionary:
+        'score': (with 'avg', 'best', and 'worst' details)
+        """
+        lastrun = self.last_testrun_tests(user)
+        stats = {
+            'score': {
+                        'avg': self.avg_score(user),
+                        'best': max(lastrun, key=lambda x: x.score).score,
+                        'worst': min(lastrun, key=lambda x: x.score).score
+                    }
+        }
+        return stats
+    
+    def avg_score(self, user):
+        """Get avg score of most recent Tests run on a Site for the User"""
+        return avg_test_list(self.last_testrun_tests(user))
+    
+    def get_pages_for_user(self, user):
+        """Get overlap of Pages for a Site and Pages that the User tracks"""
+        return list(
+            set(self.page_set.all()) & 
+            set(user.get_profile().pages.filter(site__id=self.id))
+        )
+    
+    def last_testrun_tests(self, user):
+        """Get list of Tests from the last run of the Site for the User"""
+        tests = []
+        if self.last_testrun != None:
+            for page in self.get_pages_for_user(user):
+                tests.extend(page.test_set.filter(
+                    time__gte=self.last_testrun)
+                )
+        return tests
     
 class Page(models.Model):
     url = models.CharField(max_length=900)
     site = models.ForeignKey(Site)
+    last_testrun = models.DateTimeField(null=True)
 
     def __unicode__(self):
         return self.url
+
+    def __eq__(self, page):
+        return self.site == page.site and self.url == page.url
+
+    # user is not used, just exists to allow same function signature as Site
+    def graph(self, user=None):
+        """Create data of the format (date, score) and return in dict.
+    
+        Current information included in dictionary:
+        'score': the ySlow score for the Page by day
+        
+        Future information to include:
+        'speed': the load time for the Page of a Site by day
+        'size': the page size for the Page of a Site by day
+        'requests': the number of requests for the Page by day
+        """
+        return {
+            # avg_test_list just in case we get more than one Test back
+            'score': [(date, avg_test_list(tests)) 
+                for date, tests in self.group_tests_by_date().items()]
+        }
+    
+    def group_tests_by_date(self):
+        """Get data from Page in a dict like {date: [Test, ...], ...}"""
+        # TODO: make this able to narrow the date range
+        dates = {}
+        for test in self.test_set.all():
+            dates.setdefault(test.time.date(), []).append(test)
+        return dates
+    
+    # user is not used, just exists to allow same function signature as Site
+    def header(self, user=None):
+        """Get basic information about the Page and return it in a dict
+    
+        Current information included in dictionary:
+        'score': the current ySlow score for this Page
+        'last_run': the datetime of the last testrun for this Page
+        """
+        header = {
+            'score': self.test_set.get(time=self.last_testrun).score,
+            'last_run': self.last_testrun
+        }
+        return header
+    
+    def statistics(self, user):
+        """Get statistics about the Page and and return them in a dict
+        
+        Current stats included in dictionary:
+        'score': (with 'current', 'last', and 'site_avg' details).
+        """
+        tests = self.test_set.all().order_by('-time')
+        current = tests[0].score if len(tests) > 0 else None
+        last = tests[1].score if len(tests) > 1 else None
+        stats = {
+            'score': {
+                        'current': current,
+                        'last': last,
+                        'site_avg': self.site.avg_score(user) 
+                    }
+        }
+        return stats
 
 class Test(models.Model):
     score = models.IntegerField()
@@ -96,3 +161,19 @@ class Test(models.Model):
    
     def __unicode__(self):
         return '(%s, %d)' % (self.time.ctime(), self.score)
+
+    def __eq__(self, test):
+        return self.page == test.page and self.time == test.time
+
+def avg_test_list(tests):
+    """Average the scores of a list of Tests and return the result"""
+    if len(tests) == 0:
+        return 0
+    else:
+        return (reduce(lambda x, y: x + y.score, tests, 0))/len(tests)
+
+class UserProfile(models.Model):
+    user = models.ForeignKey(User)
+    pages = models.ManyToManyField(Page)
+    sites = models.ManyToManyField(Site)
+

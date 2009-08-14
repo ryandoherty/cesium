@@ -1,0 +1,78 @@
+[
+    {
+        "pk": 1, 
+        "model": "autoyslow.site", 
+        "fields": {
+            "last_testrun": "2009-08-12 10:16:26", 
+            "base_url": "www.google.com"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "autoyslow.page", 
+        "fields": {
+            "url": "/page1.html", 
+            "last_testrun": "2009-08-12 10:16:26", 
+            "site": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "autoyslow.page", 
+        "fields": {
+            "url": "/page2.html", 
+            "last_testrun": null, 
+            "site": 1
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "autoyslow.test", 
+        "fields": {
+            "score": 80, 
+            "page": 1, 
+            "time": "2009-08-12 10:16:26"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "autoyslow.test", 
+        "fields": {
+            "score": 87, 
+            "page": 2, 
+            "time": "2009-08-12 10:16:40"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "autoyslow.test", 
+        "fields": {
+            "score": 59, 
+            "page": 1, 
+            "time": "2009-08-12 10:17:02"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "autoyslow.test", 
+        "fields": {
+            "score": 76, 
+            "page": 2, 
+            "time": "2009-08-12 10:17:14"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "autoyslow.userprofile", 
+        "fields": {
+            "sites": [
+                1
+            ], 
+            "user": 2, 
+            "pages": [
+                1, 
+                2
+            ]
+        }
+    }
+]

@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+#
+# Note: This script works only on Ubuntu, and even then it is not guaranteed
+#
+#
 
 BROWSER_PATH=/usr/bin/firefox
 
