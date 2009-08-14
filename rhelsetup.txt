@@ -95,7 +95,6 @@ Install django
 
 Install mysql-python
 #: easy_install mysql-python
-#: pip install mysql-python
 
 Install python-daemon
 #: pip install python-daemon
