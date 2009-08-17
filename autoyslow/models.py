@@ -3,13 +3,16 @@ from django.contrib.auth.models import User
 
 class Site(models.Model):
     base_url = models.CharField(max_length=100)
-    last_testrun = models.DateTimeField(null=True)
+    last_testrun = models.DateTimeField(blank=True, null=True)
     
     def __unicode__(self):
         return self.base_url
 
     def __eq__(self, site):
-        return self.base_url == site.base_url
+        try:
+            return self.base_url == site.base_url
+        except AttributeError:
+            return False
 
     def graph(self, user):
         """Return a dictionary of data for Site graphs.
@@ -88,13 +91,16 @@ class Site(models.Model):
 class Page(models.Model):
     url = models.CharField(max_length=900)
     site = models.ForeignKey(Site)
-    last_testrun = models.DateTimeField(null=True)
+    last_testrun = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
         return self.url
 
     def __eq__(self, page):
-        return self.site == page.site and self.url == page.url
+        try:
+            return self.site == page.site and self.url == page.url
+        except AttributeError:
+            return False
 
     # user is not used, just exists to allow same function signature as Site
     def graph(self, user=None):
@@ -163,7 +169,10 @@ class Test(models.Model):
         return '(%s, %d)' % (self.time.ctime(), self.score)
 
     def __eq__(self, test):
-        return self.page == test.page and self.time == test.time
+        try:
+            return self.page == test.page and self.time == test.time
+        except AttributeError:
+            return False
 
 def avg_test_list(tests):
     """Average the scores of a list of Tests and return the result"""
@@ -177,3 +186,5 @@ class UserProfile(models.Model):
     pages = models.ManyToManyField(Page)
     sites = models.ManyToManyField(Site)
 
+    def __unicode__(self):
+        return self.user.username
