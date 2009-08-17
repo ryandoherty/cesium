@@ -1,0 +1,4 @@
+CESIUMPATH=/path/to/cesium/trunk/cesium/run_cesiumd.sh
+PYTHON=/path/to/virtual_env/bin/python
+
+*/15 * * * * $CESIUMPATH/run_cesiumd.sh

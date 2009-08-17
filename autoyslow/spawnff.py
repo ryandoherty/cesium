@@ -10,7 +10,8 @@ import settings
 # repeats until all the requested pages have been loaded.  Since only one 
 # instance of Firefox can be run at any one time, we wait on the current  
 # thread to prevent multiple threads from trying to open Firefox at the 
-# same time
+# same time.  This problem could be resolved by using multiple Firefox 
+# profiles.
 def run_test(page_list):
     if len(page_list) == 0:
         time.sleep(60.0);
@@ -35,10 +36,12 @@ def run_test(page_list):
         args.extend(page_list[curr_first:(curr_first+loads_per_proc)])
         print "Starting Firefox."
         proc = subprocess.Popen(args)
+        print "Pid: %d" % proc.pid
         print "Sleeping..."
         time.sleep(float(loads_per_proc * page_timeout))
         print "Killing Firefox."
         proc.kill()
+        proc.wait()
         if curr_first + loads_per_proc > len(page_list):
             loads_per_proc = len(page_list) - curr_first
         else:

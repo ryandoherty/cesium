@@ -122,3 +122,23 @@ class ViewsTestSuite(TestCase):
         actual = simplejson.dumps(input, cls=JSONDatetimeEncoder)
         self.assertEquals(actual, expected)
 
+class CommandsTestSuite(TestCase):
+    fixtures = ['auth.json', 'autoyslow.json']
+    
+    def test_cesiumcron_get_sites(self):
+        from autoyslow.management.commands.cesiumcron import Command
+        # create a new site that hasn't been tested yet
+        s = Site.objects.create(base_url='www.test.com')
+        p = Page.objects.create(url='/', site=s)
+        expected = set(Site.objects.all())
+        actual = set(Command().get_sites_to_test())
+        self.assertEquals(actual, expected)
+
+        # add a test for the new site
+        expected.remove(s)
+        t = Test.objects.create(page=p, score=100, time=datetime.now())
+        s.last_testrun = t.time
+        s.save()
+        actual = set(Command().get_sites_to_test())
+        self.assertEquals(actual, expected)
+        
