@@ -168,6 +168,8 @@ class Page(models.Model):
 
 class Test(models.Model):
     score = models.IntegerField()
+    weight = models.IntegerField()
+    requests = models.IntegerField()
     time = models.DateTimeField('date tested')
     page = models.ForeignKey(Page)
    
