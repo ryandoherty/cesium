@@ -155,8 +155,8 @@ class Page(models.Model):
         'score': (with 'current', 'last', and 'site_avg' details).
         """
         tests = self.test_set.all().order_by('-time')
-        current = tests[0].score if len(tests) > 0 else None
-        last = tests[1].score if len(tests) > 1 else None
+        current = tests[0].score if tests else None
+        last = tests[1].score if tests else None
         stats = {
             'score': {
                         'current': current,

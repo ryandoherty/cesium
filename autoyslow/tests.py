@@ -88,6 +88,17 @@ class ModelsTestSuite(TestCase):
         self.assertEquals(len(actual.keys()), 1)
         self.assertEquals(len(score.keys()), 3)
 
+    
+    def test_site_statistics_empty_lastrun(self):
+        for test in Test.objects.all():
+            test.delete()
+        site = Site.objects.get(id=1)
+        user = User.objects.get(username="test")
+        self.assertEquals(site.last_testrun_tests(user), [])
+        actual = site.statistics(user)
+        self.assertEquals(actual['score']['best'], None)
+        self.assertEquals(actual['score']['worst'], None)
+
     def test_page_statistics(self):
         page = Page.objects.get(id=1)
         actual = page.statistics(User.objects.get(username='test'))
@@ -97,6 +108,16 @@ class ModelsTestSuite(TestCase):
         self.assertEquals(score['site_avg'], 75)
         self.assertEquals(len(actual.keys()), 1)
         self.assertEquals(len(score.keys()), 3)
+
+    def test_page_statistics_no_tests(self):
+        for test in Test.objects.all():
+            test.delete()
+        page = Page.objects.get(id=1)
+        user = User.objects.get(username="test")
+        self.assertEquals(len(page.test_set.all()), 0)
+        actual = page.statistics(user)
+        self.assertEquals(actual['score']['current'], None)
+        self.assertEquals(actual['score']['last'], None)
 
     def test_site_graph(self):
         site = Site.objects.get(id=1)
