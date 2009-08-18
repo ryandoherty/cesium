@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+from django.contrib.auth.views import password_reset 
 from cesium.autoyslow.models import Site, Page, Test
 import time
 import datetime
@@ -58,6 +59,13 @@ def format_detail_dict(obj, user):
         'graph_json': simplejson.dumps(graph, cls=JSONDatetimeEncoder)
     }
 
+@login_required
+def limited_password_reset(*args, **kwargs):
+    return password_reset(*args, **kwargs)
+
+###########################################################################
+# OLD VIEWS
+###########################################################################
 def new_site(request):
     form = SiteForm()
     return render_to_response(

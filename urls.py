@@ -1,5 +1,13 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from django.views.generic.create_update import (
+    create_object,
+    update_object,
+    delete_object
+)
+from autoyslow.site_views import limited_password_reset
+from autoyslow.forms import *
+
 from django.contrib import admin
 admin.autodiscover()
 
@@ -23,8 +31,25 @@ urlpatterns = patterns('',
     #(r'^beacon/$', 'cesium.autoyslow.beacon_views.beacon'),
     
     # user authentication stuff
+    (r'^accounts/create/$', 
+        create_object, 
+        {'form_class': CesiumUserCreationForm}),
+    (r'^accounts/update/(?P<object_id>\d+)/$',
+        update_object, 
+        {'form_class': CesiumUserUpdateForm, 'login_required': True}),
+    (r'^accounts/delete/(?P<object_id>\d+)/$',
+        delete_object, 
+        {
+            'model': User, 
+            'post_delete_redirect': '/accounts/delete/done/', 
+            'login_required': True
+        }
+    ),
+    (r'^accounts/delete/done/$', 
+        'django.views.generic.simple.direct_to_template', 
+        {'template': 'auth/user_delete_done.html'}),
     (r'^accounts/login/$', 'django.contrib.auth.views.login'),
-    (r'^accounts/reset/$', 'django.contrib.auth.views.password_reset'),
+    (r'^accounts/reset/$', limited_password_reset),
     (r'^accounts/reset/done/$', 
         'django.contrib.auth.views.password_reset_done'),
 

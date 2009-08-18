@@ -80,6 +80,8 @@ INSTALLED_APPS = (
     'cesium.autoyslow'
 )
 
+LOGIN_REDIRECT_URL = '/'
+
 # this is the port the scheduling daemon will run on
 AUTOYSLOW_DAEMON_PORT = 8003
 

@@ -58,11 +58,17 @@ class Site(models.Model):
         'score': (with 'avg', 'best', and 'worst' details)
         """
         lastrun = self.last_testrun_tests(user)
+        if lastrun:
+            best = max(lastrun, key=lambda x: x.score).score
+            worst = min(lastrun, key=lambda x: x.score).score
+        else:
+            best = worst = None
+
         stats = {
             'score': {
                         'avg': self.avg_score(user),
-                        'best': max(lastrun, key=lambda x: x.score).score,
-                        'worst': min(lastrun, key=lambda x: x.score).score
+                        'best': best,
+                        'worst': worst,
                     }
         }
         return stats
