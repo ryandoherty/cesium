@@ -1,18 +1,20 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
-   "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<title>Cesium</title>
-</head>
-<body>
-<center>
-<div id="header">
-<h1>Cesium</h1>
-<div id="linkbar">
-<a href="/">Dashboard</a>
-<a href="sites/">Sites</a>
-<a href="tests/">Tests</a>
+{% extends "base.html" %}
+
+{% block title %} - Home{% endblock title %}
+
+{% block content %}
+
+<div class="module intro">
+    <h2>Monitor YSlow grades for your websites automatically.</h2>
 </div>
+
+<div class="module secondary">
+    <h3>Features:</h3>
+    <ul>
+        <li>Pretty Graphs</li>
+        <li>Cool colors</li>
+        <li>No more testing manually!</li>
+    </ul>
 </div>
-</body>
-</html>
+
+{% endblock content %}

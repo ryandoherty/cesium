@@ -1,8 +1,63 @@
-JSON header:
-{{ header_json }}
+{% extends "base.html" %}
 
-JSON stats:
-{{ statistics_json }}
-
-JSON graph:
-{{ graph_json }}
+{% block content %}
+<p id="breadcrumbs"><a href="#">All Sites</a>  »</p>
+            
+            <div class="heading">
+                <h2>{{ site.base_url }}</h2>
+                
+                <a href="#" class="edit">Edit this site</a>
+                
+            </div>
+            
+            <div id="overview">
+                <div class="module">
+                    <h4>Site Score</h4>
+                    <p class="scoreA score">100 (A)</p>
+                </div>
+                <div class="module run">
+                    <h4>Last Test Run</h4>
+                    <p>Yesterday @ 12:00</p>
+                </div>
+                
+                <div class="module run">
+                    <h4>Next Test Run</h4>
+                    <p>Tomorrow @ 12:00</p>
+                </div>
+            </div>
+            
+            
+            <div class="module">
+                <div class="subheading">
+                    <h3>Site Statistics</h3>
+              
+                </div>
+                
+                <table>
+                    <tr>
+                        <td>Average Score</td>
+                        <td>92 (A)</td>
+                    </tr>
+                    <tr>
+                        <td>Average Page Weight</td>
+                        <td>389K</td>
+                    </tr>
+                    <tr>
+                        <td>Average HTTP Requests</td>
+                        <td>23</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="module secondary">
+                <div class="subheading">
+                    <h3>Heading 2</h3>
+                    <ul class="subnav">
+                        <li><a href="#">Tab 1</a></li>
+                        <li><a href="#">Tab 2</a></li>
+                        <li class="active"><a href="#">Tab 3</a></li>
+                    </ul>
+                </div>
+         
+                
+            </div>
+{% endblock content %}

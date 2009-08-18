@@ -20,7 +20,7 @@ def index(request):
 def site_detail(request, site_id):
     site = get_object_or_404(Site, id=site_id)
     return render_to_response("autoyslow/site_detail.html", 
-        format_detail_dict(site, request.user),
+        {'site':site},
         context_instance=RequestContext(request)
     ) 
 

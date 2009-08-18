@@ -1,0 +1,270 @@
+html {
+    background: #F8F8F8;
+}
+
+body {
+    background: #F8F8F8 url(/site_media/img/bgs.png) repeat-x left -128px;
+    color: #404040;
+    min-height: 500px;
+}
+
+body, #overview h4 {
+    font-family: Helvetica, Arial, sans-serif;  
+}
+
+a {
+    color: #006485;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Georgia, serif;
+}
+
+h2 {
+    font-size: 272%;
+}
+
+h3 {
+    font-size: 174%;
+}
+
+#header:after, #overview:after {
+    content: ".";
+    clear: both;
+    height: 0;
+    width: 0;
+    visibility: hidden;
+    display: block;
+}
+
+#wrapper {
+    width: 980px;
+    margin: 0 auto;
+    font-size: 108%;
+}
+
+td, th {
+    font-size: 108%;
+}
+
+
+#header {
+    position: relative;
+    min-height: 96px;
+    _height: 96px;
+    margin: 0 0 0.5em 0;
+}
+
+#logo {
+    float: left;
+}
+
+#logo a {
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+
+#logo img {
+    display: block;
+}
+
+#nav, .subnav {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+#nav li, .subnav li {
+    display: block;
+    float: left;
+    font-size: 123.1%;
+    background: #fff url(/site_media/img/bgs.png) repeat-x left -60px;
+    border-radius-topright: 6px;
+    border-radius-topleft: 6px;
+    -moz-border-radius-topright: 6px;
+    -moz-border-radius-topleft: 6px;
+    margin: 0 2px;
+}
+
+#nav li.active, .subnav li.active {
+    background: #fff url(/site_media/img/bgs.png) repeat-x left -24px;
+    font-weight: bold;
+}
+
+#nav li a, .subnav li a {
+    color: #000;
+    text-decoration: none;
+    padding: 7px 17px 5px;
+    display: block;
+}
+
+#breadcrumbs {
+    font-size: 123.1%;
+    font-family: Georgia, serif;
+}
+
+#breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
+.heading, .subheading {
+    border-bottom: 1px solid #bbb;
+    position: relative;
+}
+
+.heading {
+    margin: 0 0 2em 0;
+}
+
+.heading h2 {
+    display: inline;
+}
+
+.heading a {
+    font-size: 138.5%;
+}
+
+.heading .subnav, .subheading .subnav {
+    bottom: -1px;
+}
+
+.heading .subnav li {
+    background-position: left -96px;
+    font-size: 100%;
+    border: 1px solid #bfbbb5;
+    border-radius-topright: 3px;
+    border-radius-topleft: 3px;
+    -moz-border-radius-topright: 3px;
+    -moz-border-radius-topleft: 3px;
+}
+
+.heading .subnav li.active, .subheading .subnav li.active {
+    border-bottom: 1px solid #f8f8f8;
+    font-weight: bold;
+}
+
+.heading .subnav li a {
+    padding: 4px 11px 0px;
+}
+
+.edit {
+    background: url(/site_media/img/icons.png) left -48px no-repeat;
+    padding: 0 0 0 20px;
+}
+
+.add {
+    background: url(/site_media/img/icons.png) left -205px no-repeat;
+    padding: 0 0 0 20px;
+}
+
+.heading .edit, .subheading .edit, 
+.heading .add, .subheading .add {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+/** Modules **/
+.module {
+    display: inline;
+    width: 460px;
+    margin: 0 0 1em 0;
+    float: left;
+}
+
+.module .subnav li {
+    border-radius-topright: 1px;
+    border-radius-topleft: 1px;
+    -moz-border-radius-topright: 1px;
+    -moz-border-radius-topleft: 1px;
+    font-size: 100%;
+    background-position: top left;
+    border: 1px solid #bfbbb5;
+}
+
+.module .subnav li a {
+    padding: 5px 10px 1px;
+}
+
+.module.secondary {
+    float: right;
+}
+
+/** END Modules **/
+
+
+/** Table Styles **/
+
+table {
+    width: 100%;
+}
+
+td, th {
+    padding: 5px;
+}
+
+tr:nth-child(even) {
+    background: #ebebeb;
+}
+
+/** END Table Styles **/
+
+/** Overview styles **/
+
+#overview {
+    margin: 0 0 1em 0;
+}
+
+#overview .module {
+    float: left;
+    width: 150px;
+}
+
+#overview h4 {
+    font-weight: bold;
+}
+
+#overview p {
+    font-size: 146.5%;
+}
+
+#overview .run {
+    width: 200px;
+}
+
+
+/** END Overview Styles **/
+
+/** Score Styles **/
+
+.score {
+    font-weight: bold;
+}
+
+.scoreA {
+    color: #34a134;
+}
+
+.scoreB {
+    color: #79a21a;
+}
+
+.scoreC {
+    color: #bea200;
+}
+
+.scoreD {
+    color: #cf7421;
+}
+
+.scoreF {
+    color: #df4444;
+}
+
+/** End Score Styles **/

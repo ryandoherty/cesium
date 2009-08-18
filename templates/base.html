@@ -1,35 +1,116 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
-   "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-<title>{% block title %}Cesium{% endblock title %}</title>
-<link rel="stylesheet" type="text/css" href="/site_media/css/reset-min.css" />
-<link rel="stylesheet" type="text/css" href="/site_media/css/fonts-min.css" />
-<link rel="stylesheet" type="text/css" href="/site_media/css/ui-lightness/jquery-ui-1.7.1.custom.css" />
-<link rel="stylesheet" type="text/css" href="/site_media/css/header.css" />
-{% block style %}
-{% endblock style %}
-
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+    <title>Cesium{% block title %}{% endblock title %}</title>
+    {% if debug %}
+        <link rel="stylesheet" type="text/css" href="/site_media/css/reset-min.css" />
+        <link rel="stylesheet" type="text/css" href="/site_media/css/fonts-min.css" />
+        <link rel="stylesheet" type="text/css" href="/site_media/css/style.css" />
+    {% else %}
+        <link rel="stylesheet" type="text/css" href="/site_media/css/reset-min.css" />
+        <link rel="stylesheet" type="text/css" href="/site_media/css/fonts-min.css" />
+        <link rel="stylesheet" type="text/css" href="/site_media/css/style.css" />
+    {% endif %}
+    {% block style %}
+    {% endblock style %}
 </head>
 <body>
-<div id="header">
-<h1>Cesium</h1>
-<div id="linkbar">
-<a href="{% url cesium.autoyslow.site_views.index %}">Dashboard</a>
-<a href="{% url cesium.autoyslow.site_views.site_list %}">Sites</a>
-<a href="{% url cesium.autoyslow.site_views.test_list %}">Tests</a>
-</div>
-</div>
-
-{% block content %}
-{% endblock content %}
-
+    <div id="wrapper">
+        <div id="header">
+            <h1 id="logo">
+                <a href="/"><img src="/site_media/img/logo.png" alt="Cesium" width="343" height="96"></a>
+            </h1>
+            <ul id="nav">
+                 <li class="active"><a href="#">Sites</a></li>
+                 <li><a href="#">Test Runs</a></li>
+                 <li><a href="#">Account</a></li>
+             </ul>
+        </div>
+        
+        <!-- <p id="breadcrumbs"><a href="#">All Sites</a>  »</p>
+                
+                <div class="heading">
+                    <h2>www.example.com</h2>
+                    
+                    <a href="#" class="edit">Edit this site</a>
+                    <a href="#" class="add">Add a site</a>
+                    <ul class="subnav">
+                                            <li><a href="#">dsfsd</a></li>
+                                            <li><a href="#">dsfsd</a></li>
+                                            <li><a href="#">dsfsd</a></li>
+                                        </ul>
+                </div>
+                
+                <div id="overview">
+                    <div class="module">
+                        <h4>Site Score</h4>
+                        <p class="scoreA score">100 (A)</p>
+                    </div>
+                    <div class="module run">
+                        <h4>Last Test Run</h4>
+                        <p>Yesterday @ 12:00</p>
+                    </div>
+                    
+                    <div class="module run">
+                        <h4>Next Test Run</h4>
+                        <p>Tomorrow @ 12:00</p>
+                    </div>
+                </div>
+                
+                
+                <div class="module">
+                    <div class="subheading">
+                        <h3>Site Statistics</h3>
+                        <ul class="subnav">
+                                                      <li><a href="#">Tab 1</a></li>
+                                                      <li><a href="#">Tab 2</a></li>
+                                                      <li class="active"><a href="#">Tab 3</a></li>
+                                                  </ul>
+                    </div>
+                    
+                    <table>
+                        <tr>
+                            <td>Average Score</td>
+                            <td>92 (A)</td>
+                        </tr>
+                        <tr>
+                            <td>Average Page Weight</td>
+                            <td>389K</td>
+                        </tr>
+                        <tr>
+                            <td>Average HTTP Requests</td>
+                            <td>23</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="module secondary">
+                    <div class="subheading">
+                        <h3>Heading 2</h3>
+                        <ul class="subnav">
+                            <li><a href="#">Tab 1</a></li>
+                            <li><a href="#">Tab 2</a></li>
+                            <li class="active"><a href="#">Tab 3</a></li>
+                        </ul>
+                    </div>
+                    
+                    <table>
+                        <tr><th>Header</th><th>Header</th><th>Header</th></tr>
+                        <tr><td>Data</td><td>Data</td><td>Data</td></tr>
+                        <tr><td><a href="#">Data</a></td><td>Data</td><td>Data</td></tr>
+                        <tr><td>Data</td><td>Data</td><td>Data</td></tr>
+                        <tr><td>Data</td><td>Data</td><td>Data</td></tr>
+                    </table>
+                    
+                </div> -->
+        
+        {% block content %}
+        {% endblock content %}
+    </div>
+    
+    
+    {% block scripts %}
+    {% endblock scripts %}
 </body>
-<script type="text/javascript" src="/site_media/js/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src="/site_media/js/flot/jquery.flot.js"></script>
-<script type="text/javascript" src="/site_media/js/jquery-ui-1.7.1.custom.min.js"></script>
-<script type="text/javascript" src="/site_media/js/jquery.cookie.js"></script>
 
-{% block scripts %}
-{% endblock scripts %}
-</body>
+</html>
