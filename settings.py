@@ -1,27 +1,20 @@
 # Django settings for cesium project.
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
-DEBUG = False
-TEMPLATE_DEBUG = False
-
-ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
-)
-
+# Override in local_settings
+ADMINS = ()
 MANAGERS = ADMINS
-
-DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = 'cesium'             # Or path to database file if using sqlite3.
-DATABASE_USER = 'cesium'             # Not used with sqlite3.
-DATABASE_PASSWORD = 'cesium'         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
-
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
-TIME_ZONE = 'America/Los_Angeles'
+DATABASE_ENGINE = ''
+DATABASE_NAME = ''
+DATABASE_USER = ''
+DATABASE_PASSWORD = ''
+DATABASE_HOST = ''
+DATABASE_PORT = ''
+TIME_ZONE = ''
+MEDIA_ROOT = ''
+TEMPLATE_DIRS = ()
+BROWSER_LOC = ''
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -32,10 +25,6 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
-
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = 'EDIT THIS'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -65,13 +54,6 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'cesium.urls'
 
-TEMPLATE_DIRS = (
-    "EDIT THIS"
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -82,11 +64,9 @@ INSTALLED_APPS = (
 
 LOGIN_REDIRECT_URL = '/'
 
-# this is the port the scheduling daemon will run on
-AUTOYSLOW_DAEMON_PORT = 8003
-
-BROWSER_LOC = 'EDIT THIS'
-LOADS_PER_PROC = 10
-PAGE_TIMEOUT = 15    # per web page
-
 AUTH_PROFILE_MODULE = 'autoyslow.UserProfile'
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
