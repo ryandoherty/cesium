@@ -1,20 +1,40 @@
-# Django settings for cesium project.
+# Override in local_settings
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-# Override in local_settings
-ADMINS = ()
+ADMINS = (
+    # ('Your Name', 'your_email@domain.com'),
+)
 MANAGERS = ADMINS
+
+# 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_ENGINE = ''
+# Or path to database file if using sqlite3.
 DATABASE_NAME = ''
+# Not used with sqlite3.
 DATABASE_USER = ''
+# Not used with sqlite3.
 DATABASE_PASSWORD = ''
+# Set to empty string for localhost. Not used with sqlite3.
 DATABASE_HOST = ''
+# Set to empty string for default. Not used with sqlite3.
 DATABASE_PORT = ''
+
 TIME_ZONE = ''
+
 MEDIA_ROOT = ''
+
 TEMPLATE_DIRS = ()
+
+# this is the port the scheduling daemon will run on
+# sensible defaults
+AUTOYSLOW_DAEMON_PORT = 8003
+LOADS_PER_PROC = 10
+PAGE_TIMEOUT = 15    # per web page
+
 BROWSER_LOC = ''
+
+# End of local_settings
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
