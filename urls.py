@@ -43,7 +43,7 @@ urlpatterns = patterns('',
         'django.contrib.auth.views.password_reset_done'),
 
     # admin interface stuff
-    (r'^admin/', include(admin.site.urls)),
+    (r'^admin/(.*)', admin.site.root),
     
     # yslow beacon
     (r'^beacon/$', 'cesium.autoyslow.beacon_views.beacon'),
