@@ -75,10 +75,10 @@
                     
                     {% for page in site.page_set.all %}
                         <tr>
-                            <td>{{page.url}}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <td><a href="#">{{page.url}}</a></td>
+                            <td class="score scoreA"><p>98</p> <div class="scoreBarB" style="width:106px;"></div></td>
+                            <td class="size"><p>32.3</p> <div class="scoreBarB" style="width:106px;"></div></td>
+                            <td class="requests"><p>23</p><div class="scoreBarB" style="width:106px;"></div></td>
                         </tr>
                     {% endfor %}
                 </table>

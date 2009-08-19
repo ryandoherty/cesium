@@ -254,6 +254,10 @@ tr:nth-child(even) {
     font-weight: bold;
 }
 
+td.score {
+    font-weight: normal;
+}
+
 .scoreA {
     color: #34a134;
 }
@@ -274,4 +278,36 @@ tr:nth-child(even) {
     color: #df4444;
 }
 
+td.score p, td.size p, td.requests p {
+    float: left;
+    margin: 0 0.5em 0 0;
+}
+
 /** End Score Styles **/
+
+/** Scorebar Styles **/
+.scoreBarA, .scoreBarB, .scoreBarC, .scoreBarD, .scoreBarF {
+    height: 16px;
+    float: left;
+}
+
+.scoreBarA {
+    background-color: #34a134;
+}
+
+.scoreBarB {
+    background-color: #79a21a;
+}
+
+.scoreBarC {
+    background-color: #bea200;
+}
+
+.scoreBarD {
+    background-color: #cf7421;
+}
+
+.scoreBarF {
+    background-color: #df4444;
+}
+/** End Scorebar Styles **/
