@@ -1,5 +1,5 @@
 # Override in local_settings
-DEBUG = False
+DEBUG = False 
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (

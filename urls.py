@@ -15,36 +15,25 @@ urlpatterns = patterns('',
     (r'^$', 'cesium.autoyslow.site_views.index'),
     (r'^sites/(?P<site_id>\d+)/$', 
         'cesium.autoyslow.site_views.site_detail'),
+    (r'^sites/new/$', 'cesium.autoyslow.site_views.new_site'),
+    (r'^sites/(?P<site_id>\d+)/remove/$', 
+        'cesium.autoyslow.site_views.remove_site'),
     (r'^pages/(?P<page_id>\d+)/$', 
         'cesium.autoyslow.site_views.page_detail'),
-    
-    #(r'^sites/new/$', 'cesium.autoyslow.site_views.new_site'),
-    #(r'^sites/new/add/$', 'cesium.autoyslow.site_views.add_site'),
-    #(r'^sites/(?P<site_id>\d+)/remove/$', 
-    #    'cesium.autoyslow.site_views.remove_site'),
-    #(r'^sites/(?P<site_id>\d+)/data/$', 
-    #    'cesium.autoyslow.site_views.site_data'),
-    #(r'^sites/(?P<site_id>\d+)/pages/new/$', 
-    #    'cesium.autoyslow.site_views.add_page'),
-    #(r'^sites/(?P<site_id>\d+)/pages/(?P<page_id>\d+)/remove/$', 
-    #    'cesium.autoyslow.site_views.remove_page'),
-    #(r'^beacon/$', 'cesium.autoyslow.beacon_views.beacon'),
+    (r'^pages/new/(?P<site_id>\d+)/$', 
+        'cesium.autoyslow.site_views.add_page'),
+    (r'^pages/(?P<page_id>\d+)/remove/$', 
+        'cesium.autoyslow.site_views.remove_page'),
     
     # user authentication stuff
-    (r'^accounts/create/$', 
+    (r'^accounts/new/$', 
         create_object, 
-        {'form_class': CesiumUserCreationForm}),
-    (r'^accounts/update/(?P<object_id>\d+)/$',
-        update_object, 
-        {'form_class': CesiumUserUpdateForm, 'login_required': True}),
-    (r'^accounts/delete/(?P<object_id>\d+)/$',
-        delete_object, 
-        {
-            'model': User, 
-            'post_delete_redirect': '/accounts/delete/done/', 
-            'login_required': True
-        }
-    ),
+        {'form_class': CesiumUserCreationForm,
+        'post_save_redirect': '/'}),
+    (r'^accounts/update/$', 
+        'cesium.autoyslow.site_views.update_user'),
+    (r'^accounts/delete/$', 
+        'cesium.autoyslow.site_views.delete_user'),
     (r'^accounts/delete/done/$', 
         'django.views.generic.simple.direct_to_template', 
         {'template': 'auth/user_delete_done.html'}),
@@ -54,7 +43,10 @@ urlpatterns = patterns('',
         'django.contrib.auth.views.password_reset_done'),
 
     # admin interface stuff
-    (r'^admin/(.*)', admin.site.root),
+    (r'^admin/', include(admin.site.urls)),
+    
+    # yslow beacon
+    (r'^beacon/$', 'cesium.autoyslow.beacon_views.beacon'),
 )
 
 if settings.DEBUG:

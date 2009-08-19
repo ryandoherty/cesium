@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+from django.contrib.auth.models import User
 from django.contrib.auth.views import password_reset 
 from cesium.autoyslow.models import Site, Page, Test
 import time
@@ -20,7 +21,7 @@ def index(request):
 def site_detail(request, site_id):
     site = get_object_or_404(Site, id=site_id)
     return render_to_response("autoyslow/site_detail.html", 
-        format_detail_dict(site, request.user),
+        {'site':site},
         context_instance=RequestContext(request)
     ) 
 
@@ -63,121 +64,91 @@ def format_detail_dict(obj, user):
 def limited_password_reset(*args, **kwargs):
     return password_reset(*args, **kwargs)
 
-###########################################################################
-# OLD VIEWS
-###########################################################################
+@login_required
 def new_site(request):
-    form = SiteForm()
+    """If by GET, Generate a form for adding a new Site and return it.
+        If by POST, create new Site if necessary, add it to current User's 
+        profile.
+    """
+    if request.method == 'POST':
+        s, created = Site.objects.get_or_create(
+            base_url=request.POST['base_url'])
+        request.user.get_profile().sites.add(s)
+        return HttpResponseRedirect(
+            reverse('cesium.autoyslow.site_views.site_detail', 
+            args=(s.id,)))
+        
     return render_to_response(
         "site_info.html", 
-        {'form': form},
-        context_instance=RequestContext(request)
-    );
-    
-def add_site(request):
-    s = Site(base_url=request.POST['base_url'])
-    test_time = datetime.time(
-        hour=int(request.POST['test_time_0']),
-        minute=int(request.POST['test_time_1']),
-        second=0,
-        microsecond=0
+        {'form': SiteForm()},
+        context_instance=RequestContext(request),
     )
-    freq = request.POST['freq']
-    weekday = request.POST['weekday']
-    s.test_time, s.freq, s.weekday = test_time, freq, weekday
-    s.save()
-    save_schedule(s)
-    return HttpResponseRedirect(reverse('cesium.autoyslow.site_views.site_info', args=(s.id,)))
-    
-def remove_site(request, site_id):
-    s = Site.objects.get(id=site_id)
-    s.delete()
-    return HttpResponseRedirect(
-        reverse('cesium.autoyslow.site_views.site_list'))
-
-def site_info(request, site_id=None):
-    site = get_object_or_404(Site, pk=site_id)
-    hours = range(1, 13)
-    minutes = range(0, 60, 5)
-    form = SiteForm(instance=site)
-    return render_to_response("site_info.html", 
-        {
-            'site': site,
-            'hours': hours,
-            'minutes': minutes,
-            'form': form
-        },
-        context_instance=RequestContext(request)
-    )
-
-class SelectTimeWidget(forms.widgets.MultiWidget):
-    def __init__(self, attrs=None):
-        hours = [[i, str(i)] for i in range(0, 24)]
-        minutes = [[i, str(i)] for i in range(0, 60, 5)]
-        minutes[0][1] = '00'
-        minutes[1][1] = '05'
-        widgets = (forms.widgets.Select(choices=hours),
-                    forms.widgets.Select(choices=minutes))
-        super(SelectTimeWidget, self).__init__(widgets, attrs=attrs)
-
-    def decompress(self, value):
-        if value:
-            return [value.hour, value.minute]
-        return [None, None]
-
-class SelectTimeField(forms.fields.MultiValueField):
-    widget = SelectTimeWidget()
-    def __init__(self, required=True, widget=None, label=None, initial=None):
-        fields = (forms.fields.ChoiceField(),
-                    forms.fields.ChoiceField())
-        super(SelectTimeField, self).__init__(
-            fields=fields, 
-            widget=widget, 
-            label=label, 
-            initial=initial
-        )
-
-    def compress(self, data_list):
-        if data_list:
-            return datetime.time(
-                hour=data_list[0], 
-                minute=data_list[1], 
-                second=0,
-                microsecond=0
-            )
-        else:
-            return None
 
 class SiteForm(forms.ModelForm):
-    test_time = SelectTimeField()    
     class Meta:
         model = Site
-        exclude = ('base_url',)
+        exclude = ('last_testrun',)
 
-def add_page(request, site_id):
-    url = request.POST['url']
-    site = Site.objects.get(id=site_id)
-    page = Page(url=url, site=site)
-    page.save()
-    return HttpResponseRedirect(reverse('cesium.autoyslow.site_views.site_info', args=(site.id,)))
+@login_required
+def remove_site(request, site_id):
+    """If the Site is in the User's list of current Sites remove it.
+        If the Site exists but is not in the User's list of Sites
+        just return without doing anything. Otherwise return a 404 Not Found
+    """
+    s = get_object_or_404(id=site_id)
+    request.user.get_profile().sites.remove(s)
+    return HttpResponseRedirect(
+        reverse('cesium.autoyslow.site_views.index'))
 
-def remove_page(request, site_id, page_id):
-    site = Site.objects.get(id=site_id)
-    page = Page.objects.get(id=page_id)
-    page.delete()
-    return HttpResponseRedirect(reverse('cesium.autoyslow.site_views.site_info', args=(site.id,)))
+@login_required
+def update_user(request):
+    if request.method == 'POST':
+        f = UserForm(request.POST, instance=request.user)
+        f.save()
+        return HttpResponseRedirect(
+            reverse('cesium.autoyslow.site_views.index'))
 
-def site_data(request, site_id):
-    site = Site.objects.get(id=site_id)
-    id_name_dict = dict((page.id, page.url) for page in site.page_set.all())
-    page_graphs = dict((page.id, [(time.mktime(test.time.timetuple()), test.score) for test in page.test_set.all()]) for page in site.page_set.all())
-    
-    return render_to_response('site_data.html', 
-        {
-            'site': site,
-            'pages': page_graphs,
-            'id_name_dict': id_name_dict,
-            'json_data': simplejson.dumps(page_graphs)
-        },
-        context_instance=RequestContext(request)
+    return render_to_response(
+        "auth/user_update_form.html",
+        {'form': UserForm()},
+        context_instance=RequestContext(request),
     )
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('email',) 
+
+@login_required
+def delete_user(request):
+    if request.method == 'POST':
+        request.user.delete()
+        return HttpResponseRedirect(
+            reverse('cesium.autoyslow.site_views.index'))
+    
+    return render_to_response(
+        "auth/user_confirm_delete.html",
+        context_instance=RequestContext(request),
+    )
+
+@login_required    
+def add_page(request, site_id):
+    site = get_object_or_404(Site, id=site_id)
+    profile = request.user.get_profile()
+    # check to see if the specified Site is in the User's monitored Sites
+    if site not in profile.sites.all():
+        return HttpResponseRedirect(
+            reverse('cesium.autoyslow.site_views.index'))
+    
+    page, created = Page.objects.get_or_create(
+        url=request.POST['url'], site__id=site_id)
+    request.user.get_profile().pages.add(page)
+    return HttpResponseRedirect(
+        reverse('cesium.autoyslow.site_views.index'))
+
+@login_required
+def remove_page(request, page_id):
+    page = get_object_or_404(Page, id=page_id)
+    request.user.get_profile().pages.remove(page)
+    return HttpResponseRedirect(
+        reverse('cesium.autoyslow.site_views.index'))
