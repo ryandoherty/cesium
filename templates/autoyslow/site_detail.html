@@ -50,14 +50,37 @@
             </div>
             <div class="module secondary">
                 <div class="subheading">
-                    <h3>Heading 2</h3>
+
                     <ul class="subnav">
-                        <li><a href="#">Tab 1</a></li>
-                        <li><a href="#">Tab 2</a></li>
-                        <li class="active"><a href="#">Tab 3</a></li>
+                        <li><a href="#">Score</a></li>
+                        <li><a href="#">Size</a></li>
+                        <li class="active"><a href="#">Requests</a></li>
                     </ul>
-                </div>
-         
-                
+                </div>    
             </div>
+            
+            <div class="subheading">
+                <h3>Page Details</h3>
+                <a href="#" class="edit">Add / Remove Pages</a>
+            </div>
+            
+            {% if site.page_set %}
+                <table>
+                    <tr>
+                        <th>Page</th>
+                        <th>Score</th>
+                        <th>Size (KB)</th>
+                        <th>HTTP Requests</th>
+                    </tr>
+                    
+                    {% for page in site.page_set.all %}
+                        <tr>
+                            <td>{{page.url}}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif%}
 {% endblock content %}

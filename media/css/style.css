@@ -116,6 +116,9 @@ td, th {
 .heading, .subheading {
     border-bottom: 1px solid #bbb;
     position: relative;
+    clear: both;
+    min-height: 2.15em;
+    _height: 2.15em;
 }
 
 .heading {
@@ -156,6 +159,10 @@ td, th {
 .edit {
     background: url(/site_media/img/icons.png) left -48px no-repeat;
     padding: 0 0 0 20px;
+}
+
+.subheading .edit {
+    font-size: 116%;
 }
 
 .add {
