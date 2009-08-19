@@ -19,6 +19,11 @@ DATABASE_PASSWORD = ''
 DATABASE_HOST = ''
 # Set to empty string for default. Not used with sqlite3.
 DATABASE_PORT = ''
+# Options for the database
+DATABASE_OPTIONS = {
+    # MySQL Specific -- override locally if not using MySQL
+    "init_command": "SET storage_engine=INNODB",
+}
 
 TIME_ZONE = ''
 
@@ -70,6 +75,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
 )
 
 ROOT_URLCONF = 'cesium.urls'

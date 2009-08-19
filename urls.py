@@ -16,28 +16,22 @@ urlpatterns = patterns('',
     (r'^sites/$', 'cesium.autoyslow.site_views.site_list'),
     (r'^sites/(?P<site_id>\d+)/$', 
         'cesium.autoyslow.site_views.site_detail'),
-    (r'^sites/new/$', 
-        create_object,
-        {
-            'form_class': SiteForm, 
-            'login_required': True, 
-            'post_save_redirect': '/'
-        }
-    ),
+    (r'^sites/new/$', 'cesium.autoyslow.site_views.add_site'),
     (r'^sites/remove/(?P<site_id>\d+)/$', 
         'cesium.autoyslow.site_views.remove_site'),
     (r'^pages/(?P<page_id>\d+)/$', 
         'cesium.autoyslow.site_views.page_detail'),
     (r'^pages/new/(?P<site_id>\d+)/$', 
         'cesium.autoyslow.site_views.add_page'),
-    (r'^pages/(?P<page_id>\d+)/remove/$', 
+    (r'^pages/remove/(?P<page_id>\d+)/$', 
         'cesium.autoyslow.site_views.remove_page'),
     
     # user authentication stuff
     (r'^accounts/new/$', 
         create_object, 
-        {'form_class': CesiumUserCreationForm,
-        'post_save_redirect': '/'}),
+        {'form_class': CesiumUserCreationForm, 'post_save_redirect': '/'},
+        'accounts.new'
+    ),
     (r'^accounts/update/$', 
         'cesium.autoyslow.site_views.update_user'),
     (r'^accounts/delete/$', 

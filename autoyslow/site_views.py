@@ -5,11 +5,13 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User
 from django.contrib.auth.views import password_reset 
+from django.views.generic.create_update import create_object
 from cesium.autoyslow.models import Site, Page, Test
 import time
 import datetime
 from django.utils import simplejson
 from django import forms
+from forms import *
 
 def index(request):
     return render_to_response("index.html", 
@@ -72,6 +74,28 @@ def format_detail_dict(obj, user):
 @login_required
 def limited_password_reset(*args, **kwargs):
     return password_reset(*args, **kwargs)
+
+@login_required
+def add_site(request):
+    if request.method == 'POST':
+        redirect = create_object(
+            request=request,
+            login_required=True, 
+            post_save_redirect='/',
+            form_class=SiteForm
+        )
+        site = Site.objects.get(base_url=request.POST['base_url'])
+        print site.id
+        page = Page.objects.get_or_create(url='/', site=site)
+        request.user.get_profile().pages.add(page)
+        return redirect
+   
+    print "add_site GET" 
+    return create_object(
+        request,
+        form_class=SiteForm,
+        login_required=True
+    )
 
 @login_required
 def remove_site(request, site_id):
