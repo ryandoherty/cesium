@@ -1,8 +1,9 @@
 from django.db import models
+from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 
 class Site(models.Model):
-    base_url = models.CharField(max_length=100)
+    base_url = models.CharField(max_length=100, unique=True)
     last_testrun = models.DateTimeField(blank=True, null=True)
     
     def __unicode__(self):
@@ -196,3 +197,11 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return self.user.username
+
+# This stuff is to create a blank UserProfile each time a new User is 
+# created
+def create_user_profile(sender, **kwargs):
+    if kwargs['created']:
+        UserProfile.objects.create(user=kwargs['instance'])
+
+post_save.connect(create_user_profile, sender=User)

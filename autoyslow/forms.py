@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
+from models import *
 
 class CesiumUserCreationForm(UserCreationForm):
     email = forms.EmailField(label="Email")
@@ -14,3 +15,8 @@ class CesiumUserCreationForm(UserCreationForm):
 
 class CesiumUserUpdateForm(CesiumUserCreationForm):
     pass 
+
+class SiteForm(forms.ModelForm):
+    class Meta:
+        model = Site
+        exclude = ('last_testrun',)

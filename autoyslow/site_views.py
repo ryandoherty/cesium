@@ -16,13 +16,22 @@ def index(request):
         {},
         context_instance=RequestContext(request)
     )
+
+@login_required
+def site_list(request):
+    return render_to_response(
+        "autoyslow/site_list.html",
+        {'sites': request.user.get_profile().sites.all()},
+        context_instance=RequestContext(request),
+    )
         
 @login_required
 def site_detail(request, site_id):
     site = get_object_or_404(Site, id=site_id)
-    return render_to_response("autoyslow/site_detail.html", 
+    return render_to_response(
+        "autoyslow/site_detail.html", 
         format_detail_dict(site, request.user),
-        context_instance=RequestContext(request)
+        context_instance=RequestContext(request),
     ) 
 
 @login_required
@@ -65,38 +74,13 @@ def limited_password_reset(*args, **kwargs):
     return password_reset(*args, **kwargs)
 
 @login_required
-def new_site(request):
-    """If by GET, Generate a form for adding a new Site and return it.
-        If by POST, create new Site if necessary, add it to current User's 
-        profile.
-    """
-    if request.method == 'POST':
-        s, created = Site.objects.get_or_create(
-            base_url=request.POST['base_url'])
-        request.user.get_profile().sites.add(s)
-        return HttpResponseRedirect(
-            reverse('cesium.autoyslow.site_views.site_detail', 
-            args=(s.id,)))
-        
-    return render_to_response(
-        "site_info.html", 
-        {'form': SiteForm()},
-        context_instance=RequestContext(request),
-    )
-
-class SiteForm(forms.ModelForm):
-    class Meta:
-        model = Site
-        exclude = ('last_testrun',)
-
-@login_required
 def remove_site(request, site_id):
     """If the Site is in the User's list of current Sites remove it.
         If the Site exists but is not in the User's list of Sites
         just return without doing anything. Otherwise return a 404 Not Found
     """
-    s = get_object_or_404(id=site_id)
-    request.user.get_profile().sites.remove(s)
+    site = get_object_or_404(Site, id=site_id)
+    request.user.get_profile().sites.remove(site)
     return HttpResponseRedirect(
         reverse('cesium.autoyslow.site_views.index'))
 

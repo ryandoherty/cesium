@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}
+- Site Info - {{ site.base_url }}
+{% endblock title %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="/site_media/css/info.css" />
+{% endblock style %}
+
+{% block content %}
+<div id="site-info">
+    <form action="/sites/new/" method="post">
+{{ form.as_p }}
+<button type="submit">Submit</button>
+</form>
+</div>
+
+{% endblock content %}
