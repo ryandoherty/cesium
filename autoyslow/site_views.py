@@ -86,7 +86,7 @@ def add_site(request):
         )
         site = Site.objects.get(base_url=request.POST['base_url'])
         print site.id
-        page = Page.objects.get_or_create(url='/', site=site)
+        page, created = Page.objects.get_or_create(url='/', site=site)
         request.user.get_profile().pages.add(page)
         return redirect
    
