@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content%}
+<h2>Sign Up</h2>
+
+<form action="{% url accounts.new%}" method="post" id="register">
+    <p id="signup-message">You're just 4 fields away from performance nirvana.</p>
+    <ol>
+        <li>
+            <label for="username">Username: <em>(4 characters minimum, 30 max)</em></label>
+            {{form.username.errors}}
+            {{form.username}}
+        </li>
+        <li>
+            <label for="password1">Password: <em>(6 characters minimum)</em></label>
+            {{form.password1.errors}}
+            {{form.password1}}
+        </li>
+        <li>
+            <label for="password2">Repeat password:</label>
+            {{form.password2.errors}}
+            {{form.password2}}
+        </li>
+        <li>
+            <label for="email">Email address:</label>
+            {{form.email.errors}}
+            {{form.email}}
+        </li>
+        <li>
+            <input name="submit" type="submit" value="Signup!" />
+        </li>
+    </ol>
+</form>
+
+<div id="register-message" class="prose">
+    <h3>Why you'll love Cesium</h3>
+    <ul>
+        <li>Automatic YSlow grading (no more manual testing!)</li>
+        <li>Track your grades over time (pretty graphs!)</li>
+        <li>Get detailed, per-page statistics (saves time!)</li>
+        <li>Did we mention it was free?</li>
+    </ul>
+</div>
+
+{% endblock content %}

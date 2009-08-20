@@ -27,11 +27,15 @@ urlpatterns = patterns('',
         'cesium.autoyslow.site_views.remove_page'),
     
     # user authentication stuff
-    (r'^accounts/new/$', 
+    (r'^accounts/new/$',
         create_object, 
-        {'form_class': CesiumUserCreationForm, 'post_save_redirect': '/'},
+        {'form_class': CesiumUserCreationForm, 'post_save_redirect': '/accounts/done',
+        'template_name':'auth/user_new.html'},
         'accounts.new'
     ),
+    (r'^accounts/done/$', 
+        'django.views.generic.simple.direct_to_template', 
+        {'template': 'auth/user_new_done.html'}),
     (r'^accounts/update/$', 
         'cesium.autoyslow.site_views.update_user'),
     (r'^accounts/delete/$', 

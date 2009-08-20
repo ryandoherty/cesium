@@ -64,7 +64,7 @@
                 <a href="#" class="edit">Add / Remove Pages</a>
             </div>
             
-            {% if site.page_set %}
+            {% if site.page_set.all.count > 0 %}
                 <table>
                     <tr>
                         <th>Page</th>

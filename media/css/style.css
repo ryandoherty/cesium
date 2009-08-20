@@ -23,6 +23,7 @@ a:hover {
 
 h1, h2, h3, h4, h5, h6 {
     font-family: Georgia, serif;
+    margin: 0.5em 0;
 }
 
 h2 {
@@ -33,7 +34,38 @@ h3 {
     font-size: 174%;
 }
 
-#header:after, #overview:after {
+h4 {
+    font-size: 167%;
+}
+
+p {
+    margin: 0.5em 0;
+}
+
+label {
+    display: block;
+
+}
+
+input[type="text"], input[type="password"] {
+    margin: 0.1em 0;
+}
+
+input[type="submit"], a.button {
+    font-weight: bold;
+    border:1px solid #488F03;
+    text-shadow:-1px -1px 1px #7BAB29;
+    padding: 5px 10px;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    color: #fff;
+    font-size: 123.1%;
+    cursor: pointer;
+    background: url(/site_media/img/button-green.jpg) center center repeat-x;
+}
+
+#header:after, #overview:after, #wrapper:after {
     content: ".";
     clear: both;
     height: 0;
@@ -62,6 +94,7 @@ td, th {
 
 #logo {
     float: left;
+    margin: 0;
 }
 
 #logo a {
@@ -311,3 +344,75 @@ td.score p, td.size p, td.requests p {
     background-color: #df4444;
 }
 /** End Scorebar Styles **/
+
+/** Registration Form **/
+#register {
+    float: left;
+    width: 360px;
+}
+
+#register li {
+    margin-bottom: 1em;
+}
+
+#register li li {
+    margin-bottom: 0;
+}
+
+#register-message {
+    float: left;
+    width: 430px;
+    margin: 0 0 0 30px;
+    background: #ddd;
+    padding: 4px 10px;
+    font-size: 123.1%;
+}
+
+#register-message h3 {
+    margin-top: 0;
+}
+
+/** End Registration Form **/
+
+/** Forms styling **/
+.errorlist {
+    color: red;
+    font-weight: bold;
+}
+
+/** End forms styling **/
+
+/** Prose (default) styles **/
+.prose ul li {
+    margin: 0.5em 0 0 0.5em;
+    list-style-type: disc;
+}
+
+.prose ul {
+    margin: 0 0 0 1em;
+}
+/** End Prose styles **/
+
+.signup-features {
+    margin: 1em 0 0 0;
+    width: 280px;
+}
+
+.signup-features a.button {
+    font-size: 153.9%;
+}
+
+.signup-features li {
+    font-size: 123.1%;
+}
+
+#homepage-screenshot {
+    float: right;
+}
+
+#signup-message {
+    font-weight: bold;
+    background: #FFFED5;
+    padding: 0.5em;
+    margin: 1em 0;
+}
