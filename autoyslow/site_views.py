@@ -14,7 +14,12 @@ from django import forms
 from forms import *
 
 def index(request):
-    return render_to_response("index.html", 
+    if request.user.is_anonymous():
+        template = 'index.html'
+    else:
+        template = 'index_logged_in.html'
+    
+    return render_to_response(template, 
         {},
         context_instance=RequestContext(request)
     )
@@ -90,11 +95,9 @@ def add_site(request):
         request.user.get_profile().pages.add(page)
         return redirect
    
-    print "add_site GET" 
-    return create_object(
-        request,
-        form_class=SiteForm,
-        login_required=True
+    return render_to_response("autoyslow/add_site.html", 
+        None,
+        context_instance=RequestContext(request)
     )
 
 @login_required

@@ -137,6 +137,16 @@ td, th {
     display: block;
 }
 
+#account {
+    float: right;
+    color: #fff;
+    font-size: 91%;
+}
+
+#account a {
+    color: #fff;
+}
+
 #breadcrumbs {
     font-size: 123.1%;
     font-family: Georgia, serif;

@@ -21,14 +21,17 @@
             <h1 id="logo">
                 <a href="/"><img src="/site_media/img/logo.png" alt="Cesium" width="343" height="96"></a>
             </h1>
-            {% if user.is_anonymous %}
-                
-            {% else %}
+            {% if user.is_authenticated %}
+                <div id="account">
+                  <p><a href="{% url cesium.autoyslow.site_views.update_user %}">My account</a> | <a href="#">Sign out</a></p>
+                </div>
                 <ul id="nav">
                      <li class="active"><a href="#">Sites</a></li>
                      <li><a href="#">Test Runs</a></li>
                      <li><a href="#">Account</a></li>
                  </ul>
+            {% else %}
+                
             {% endif %}
         </div>
         
