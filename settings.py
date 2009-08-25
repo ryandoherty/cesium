@@ -1,4 +1,12 @@
-# Override in local_settings
+import os
+
+# Use `path` to talk about directories relative to this file.
+ROOT = os.path.abspath(os.path.dirname(__file__))
+path = lambda *paths: os.path.join(ROOT, *paths)
+
+
+### The following MUST be overridden in local_settings.py ###
+
 DEBUG = False 
 TEMPLATE_DEBUG = DEBUG
 
@@ -25,21 +33,38 @@ DATABASE_OPTIONS = {
     "init_command": "SET storage_engine=INNODB",
 }
 
-TIME_ZONE = ''
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = ''
 
-MEDIA_ROOT = ''
+### Sensible defaults that MAY need be overridden in local_settings.py ###
 
-TEMPLATE_DIRS = ()
+TIME_ZONE = 'America/Los_Angeles'
 
-# this is the port the scheduling daemon will run on
-# sensible defaults
+MEDIA_ROOT = path('media')
+
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash if there is a path component (optional in other cases).
+# Examples: "http://media.lawrence.com", "http://example.com/media/"
+MEDIA_URL = '/site_media/'
+
+# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
+# trailing slash.
+# Examples: "http://foo.com/media/", "/media/".
+ADMIN_MEDIA_PREFIX = '/media/'
+
+TEMPLATE_DIRS = (
+    path('templates')
+)
+
+# This is the port the scheduling daemon will run on.
 AUTOYSLOW_DAEMON_PORT = 8003
 LOADS_PER_PROC = 10
-PAGE_TIMEOUT = 15    # per web page
+PAGE_TIMEOUT = 15    # Per web page.
 
+# Full path to the Firefox executable.
 BROWSER_LOC = ''
 
-# End of local_settings
+### Probably don't need to override anything under here. ###
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -50,19 +75,6 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = ''
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
