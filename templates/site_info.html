@@ -5,7 +5,7 @@
 {% endblock title %}
 
 {% block style %}
-<link rel="stylesheet" type="text/css" href="/site_media/css/info.css" />
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/info.css" />
 {% endblock style %}
 
 {% block content %}
@@ -46,7 +46,7 @@
 {% endblock content %}
 
 {% block scripts %}
-<script type="text/javascript" src="/site_media/js/warning.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/warning.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
     var warning = new Warning();

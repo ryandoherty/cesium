@@ -4,13 +4,13 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
     <title>Cesium{% block title %}{% endblock title %}</title>
     {% if debug %}
-        <link rel="stylesheet" type="text/css" href="/site_media/css/reset-min.css" />
-        <link rel="stylesheet" type="text/css" href="/site_media/css/fonts-min.css" />
-        <link rel="stylesheet" type="text/css" href="/site_media/css/style.css" />
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/reset-min.css" />
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/fonts-min.css" />
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/style.css" />
     {% else %}
-        <link rel="stylesheet" type="text/css" href="/site_media/css/reset-min.css" />
-        <link rel="stylesheet" type="text/css" href="/site_media/css/fonts-min.css" />
-        <link rel="stylesheet" type="text/css" href="/site_media/css/style.css" />
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/reset-min.css" />
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/fonts-min.css" />
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/style.css" />
     {% endif %}
     {% block style %}
     {% endblock style %}
@@ -19,7 +19,7 @@
     <div id="wrapper">
         <div id="header">
             <h1 id="logo">
-                <a href="/"><img src="/site_media/img/logo.png" alt="Cesium" width="343" height="96"></a>
+                <a href="/"><img src="{{ MEDIA_URL }}img/logo.png" alt="Cesium" width="343" height="96"></a>
             </h1>
             {% if user.is_authenticated %}
                 <div id="account">

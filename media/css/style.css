@@ -3,7 +3,7 @@ html {
 }
 
 body {
-    background: #F8F8F8 url(/site_media/img/bgs.png) repeat-x left -128px;
+    background: #F8F8F8 url(../img/bgs.png) repeat-x left -128px;
     color: #404040;
     min-height: 500px;
 }
@@ -62,7 +62,7 @@ input[type="submit"], a.button {
     color: #fff;
     font-size: 123.1%;
     cursor: pointer;
-    background: url(/site_media/img/button-green.jpg) center center repeat-x;
+    background: url(../img/button-green.jpg) center center repeat-x;
 }
 
 #header:after, #overview:after, #wrapper:after {
@@ -117,7 +117,7 @@ td, th {
     display: block;
     float: left;
     font-size: 123.1%;
-    background: #fff url(/site_media/img/bgs.png) repeat-x left -60px;
+    background: #fff url(../img/bgs.png) repeat-x left -60px;
     border-radius-topright: 6px;
     border-radius-topleft: 6px;
     -moz-border-radius-topright: 6px;
@@ -126,7 +126,7 @@ td, th {
 }
 
 #nav li.active, .subnav li.active {
-    background: #fff url(/site_media/img/bgs.png) repeat-x left -24px;
+    background: #fff url(../img/bgs.png) repeat-x left -24px;
     font-weight: bold;
 }
 
@@ -200,7 +200,7 @@ td, th {
 }
 
 .edit {
-    background: url(/site_media/img/icons.png) left -48px no-repeat;
+    background: url(../img/icons.png) left -48px no-repeat;
     padding: 0 0 0 20px;
 }
 
@@ -209,7 +209,7 @@ td, th {
 }
 
 .add {
-    background: url(/site_media/img/icons.png) left -205px no-repeat;
+    background: url(../img/icons.png) left -205px no-repeat;
     padding: 0 0 0 20px;
 }
 

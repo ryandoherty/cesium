@@ -56,7 +56,9 @@ urlpatterns = patterns('',
 )
 
 if settings.DEBUG:
+   # Remove leading and trailing slashes so the regex matches.
+   media_url = settings.MEDIA_URL.lstrip('/').rstrip('/')
    urlpatterns += patterns('',
-      (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', 
+      (r'^%s/(?P<path>.*)$' % media_url, 'django.views.static.serve',
          {'document_root': settings.MEDIA_ROOT})
       )
