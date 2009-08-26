@@ -204,4 +204,5 @@ def create_user_profile(sender, **kwargs):
     if kwargs['created']:
         UserProfile.objects.create(user=kwargs['instance'])
 
-post_save.connect(create_user_profile, sender=User)
+post_save.connect(create_user_profile, sender=User, 
+    dispatch_uid="cesium.autoyslow.models")
