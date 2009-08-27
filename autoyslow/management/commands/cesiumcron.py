@@ -14,8 +14,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.setup_pid_file()
         
-        print self.get_sites_to_test()
-        
         # run tests
         for site in self.get_sites_to_test():
             spawnff.run_test(
