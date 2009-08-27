@@ -13,7 +13,9 @@ def cleanup_pidfile(pidfile):
 class Command(BaseCommand):
     def handle(self, *args, **options):
         self.setup_pid_file()
-
+        
+        print self.get_sites_to_test()
+        
         # run tests
         for site in self.get_sites_to_test():
             spawnff.run_test(
@@ -34,5 +36,5 @@ class Command(BaseCommand):
 
     def get_sites_to_test(self):
         last_run_period = datetime.now() - timedelta(hours=24)
-        return Site.objects.filter(userprofile__count>0).exclude(
+        return Site.objects.filter(userprofile__sites__gt=0).exclude(
             last_testrun__isnull=False, last_testrun__gt=last_run_period)
