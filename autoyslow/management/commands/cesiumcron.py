@@ -1,25 +1,30 @@
+import atexit
+import logging
 import os
 import sys
-import atexit
+import urlparse
 from datetime import datetime, timedelta
-import logging
+
 from django.core.management.base import BaseCommand
 from django.db.models import Count
 
 from autoyslow.models import Site
 from autoyslow import spawnff
 
+
 def cleanup_pidfile(pidfile):
     os.unlink(pidfile)
 
+
 class Command(BaseCommand):
+
     def handle(self, *args, **options):
         self.setup_pid_file()
 
         # run tests
         for site in self.get_sites_to_test():
-            spawnff.run_test(
-                [(site.base_url+page.url) for page in site.page_set.all()])
+            spawnff.run_test(urlparse.urljoin(site.base_url, page.url)
+                             for page in site.page_set.all())
 
     def setup_pid_file(self):
         pid = str(os.getpid())
