@@ -8,6 +8,7 @@ from django.utils import simplejson
 
 from autoyslow.models import Page, Site, Test, User
 from autoyslow.site_views import JSONDatetimeEncoder, avg_test_list
+from autoyslow.management.commands import cesiumcron
 
 
 class ModelsTestSuite(TestCase):
@@ -151,21 +152,29 @@ class ViewsTestSuite(TestCase):
 
 class CommandsTestSuite(TestCase):
     fixtures = ['auth.json', 'autoyslow.json']
-    
+
     def test_cesiumcron_get_sites(self):
-        from autoyslow.management.commands.cesiumcron import Command
-        # create a new site that hasn't been tested yet
-        s = Site.objects.create(base_url='www.test.com')
-        p = Page.objects.create(url='/', site=s)
+
         expected = set(Site.objects.all())
-        actual = set(Command().get_sites_to_test())
+        # Create a new site that doesn't belong to any users.
+        s = Site.objects.create(base_url='www.test.com')
+        actual = set(cesiumcron.Command().get_sites_to_test())
         self.assertEquals(actual, expected)
 
-        # add a test for the new site
-        expected.remove(s)
-        t = Test.objects.create(page=p, score=100, time=datetime.now())
+        # Give the new site a user, should show up in sites to test.
+        s.users.add(User.objects.get(username='test'))
+        expected.add(s)
+        actual = set(cesiumcron.Command().get_sites_to_test())
+        self.assertEqual(actual, expected)
+
+        # Add a recent test for the new site, take it out of rotation.
+        p = Page.objects.create(url='/', site=s)
+        t = Test.objects.create(page=p, score=100, time=datetime.now(),
+                                weight=1, requests=1)
+        # TODO: site.last_testrun should be updated with a trigger.
         s.last_testrun = t.time
+        expected.remove(s)
         s.save()
-        actual = set(Command().get_sites_to_test())
+
+        actual = set(cesiumcron.Command().get_sites_to_test())
         self.assertEquals(actual, expected)
-        

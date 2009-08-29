@@ -4,6 +4,8 @@ import atexit
 from datetime import datetime, timedelta
 import logging
 from django.core.management.base import BaseCommand
+from django.db.models import Count
+
 from autoyslow.models import Site
 from autoyslow import spawnff
 
@@ -13,7 +15,7 @@ def cleanup_pidfile(pidfile):
 class Command(BaseCommand):
     def handle(self, *args, **options):
         self.setup_pid_file()
-        
+
         # run tests
         for site in self.get_sites_to_test():
             spawnff.run_test(
@@ -25,7 +27,7 @@ class Command(BaseCommand):
         if os.path.isfile(pidfile):
             logging.basicConfig(filename='logs/log.txt')
             logging.error(
-                "%s exists - daemon is probably running - exiting..." % 
+                "%s exists - daemon is probably running - exiting..." %
                 pidfile
             )
             sys.exit()
@@ -34,6 +36,7 @@ class Command(BaseCommand):
 
     def get_sites_to_test(self):
         last_run_period = datetime.now() - timedelta(hours=24)
-        # TODO: this doesn't really get sites with more than one user. (513376)
-        return Site.objects.filter(users__sites__gt=0).exclude(
-            last_testrun__isnull=False, last_testrun__gt=last_run_period)
+        sites_in_use = (Site.objects.annotate(num_users=Count('users'))
+                        .filter(num_users__gte=1))
+        return sites_in_use.exclude(last_testrun__isnull=False,
+                                    last_testrun__gt=last_run_period)
