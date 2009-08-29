@@ -2,9 +2,11 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 
+
 class Site(models.Model):
     base_url = models.CharField(max_length=100, unique=True)
     last_testrun = models.DateTimeField(blank=True, null=True)
+    users = models.ManyToManyField(User, related_name='sites')
     
     def __unicode__(self):
         return self.base_url
@@ -82,7 +84,7 @@ class Site(models.Model):
         """Get overlap of Pages for a Site and Pages that the User tracks"""
         return list(
             set(self.page_set.all()) & 
-            set(user.get_profile().pages.filter(site__id=self.id))
+            set(user.pages.filter(site__id=self.id))
         )
     
     def last_testrun_tests(self, user):
@@ -99,6 +101,7 @@ class Page(models.Model):
     url = models.CharField(max_length=900)
     site = models.ForeignKey(Site)
     last_testrun = models.DateTimeField(blank=True, null=True)
+    users = models.ManyToManyField(User, related_name='pages')
 
     def __unicode__(self):
         return self.url
@@ -189,20 +192,3 @@ def avg_test_list(tests):
         return 0
     else:
         return (reduce(lambda x, y: x + y.score, tests, 0))/len(tests)
-
-class UserProfile(models.Model):
-    user = models.ForeignKey(User)
-    pages = models.ManyToManyField(Page)
-    sites = models.ManyToManyField(Site)
-
-    def __unicode__(self):
-        return self.user.username
-
-# This stuff is to create a blank UserProfile each time a new User is 
-# created
-def create_user_profile(sender, **kwargs):
-    if kwargs['created']:
-        UserProfile.objects.create(user=kwargs['instance'])
-
-post_save.connect(create_user_profile, sender=User, 
-    dispatch_uid="cesium.autoyslow.models")

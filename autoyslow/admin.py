@@ -25,4 +25,3 @@ class SiteAdmin(admin.ModelAdmin):
 admin.site.register(Site, SiteAdmin)
 admin.site.register(Page)
 admin.site.register(Test)
-admin.site.register(UserProfile)

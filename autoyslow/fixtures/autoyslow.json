@@ -4,7 +4,10 @@
         "model": "autoyslow.site", 
         "fields": {
             "last_testrun": "2009-08-12 10:16:26", 
-            "base_url": "www.google.com"
+            "base_url": "www.google.com",
+            "users": [
+                2
+            ]
         }
     }, 
     {
@@ -13,7 +16,10 @@
         "fields": {
             "url": "/page1.html", 
             "last_testrun": "2009-08-12 10:16:26", 
-            "site": 1
+            "site": 1,
+            "users": [
+                2
+            ]
         }
     }, 
     {
@@ -22,7 +28,10 @@
         "fields": {
             "url": "/page2.html", 
             "last_testrun": null, 
-            "site": 1
+            "site": 1,
+            "users": [
+                2
+            ]
         }
     }, 
     {
@@ -67,20 +76,6 @@
             "weight": 1,
             "requests": 2,
             "time": "2009-08-12 10:17:14"
-        }
-    }, 
-    {
-        "pk": 1, 
-        "model": "autoyslow.userprofile", 
-        "fields": {
-            "sites": [
-                1
-            ], 
-            "user": 2, 
-            "pages": [
-                1, 
-                2
-            ]
         }
     }
 ]
