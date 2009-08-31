@@ -28,7 +28,7 @@ def index(request):
 def site_list(request):
     return render_to_response(
         "autoyslow/site_list.html",
-        {'sites': request.user.get_profile().sites.all()},
+        {'sites': request.user.sites.all()},
         context_instance=RequestContext(request),
     )
         
@@ -107,7 +107,7 @@ def remove_site(request, site_id):
         just return without doing anything. Otherwise return a 404 Not Found
     """
     site = get_object_or_404(Site, id=site_id)
-    request.user.get_profile().sites.remove(site)
+    request.user.sites.remove(site)
     return HttpResponseRedirect(
         reverse('cesium.autoyslow.site_views.index'))
 
@@ -145,21 +145,20 @@ def delete_user(request):
 @login_required    
 def add_page(request, site_id):
     site = get_object_or_404(Site, id=site_id)
-    profile = request.user.get_profile()
     # check to see if the specified Site is in the User's monitored Sites
-    if site not in profile.sites.all():
+    if site not in request.user.sites.all():
         return HttpResponseRedirect(
             reverse('cesium.autoyslow.site_views.index'))
     
     page, created = Page.objects.get_or_create(
         url=request.POST['url'], site__id=site_id)
-    request.user.get_profile().pages.add(page)
+    request.user.pages.add(page)
     return HttpResponseRedirect(
         reverse('cesium.autoyslow.site_views.index'))
 
 @login_required
 def remove_page(request, page_id):
     page = get_object_or_404(Page, id=page_id)
-    request.user.get_profile().pages.remove(page)
+    request.user.pages.remove(page)
     return HttpResponseRedirect(
         reverse('cesium.autoyslow.site_views.index'))

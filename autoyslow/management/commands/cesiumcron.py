@@ -34,5 +34,6 @@ class Command(BaseCommand):
 
     def get_sites_to_test(self):
         last_run_period = datetime.now() - timedelta(hours=24)
-        return Site.objects.filter(userprofile__sites__gt=0).exclude(
+        # TODO: this doesn't really get sites with more than one user. (513376)
+        return Site.objects.filter(users__sites__gt=0).exclude(
             last_testrun__isnull=False, last_testrun__gt=last_run_period)

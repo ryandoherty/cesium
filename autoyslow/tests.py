@@ -6,8 +6,8 @@ from django.db import models
 from django.test import TestCase
 from django.utils import simplejson
 
-from autoyslow.models import *
-from autoyslow.site_views import *
+from autoyslow.models import Page, Site, Test, User
+from autoyslow.site_views import JSONDatetimeEncoder, avg_test_list
 
 
 class ModelsTestSuite(TestCase):
@@ -38,7 +38,7 @@ class ModelsTestSuite(TestCase):
             User.objects.get(username='test')))
         self.assertEquals(actual, expected)
         
-        User.objects.get(username__exact='test').get_profile().pages.remove(
+        User.objects.get(username__exact='test').pages.remove(
             Page.objects.get(id=1))
         expected.remove(Page.objects.get(id=1))
         actual = set(site.get_pages_for_user( 
@@ -137,12 +137,6 @@ class ModelsTestSuite(TestCase):
         self.assertEquals(set(actual['score']), 
             set([(page.last_testrun.date(), 69)]))
         self.assertEquals(len(actual.keys()), 1)
-
-    def test_single_profile(self):
-        user = User.objects.create(username='new_user')
-        model = models.get_model(*settings.AUTH_PROFILE_MODULE.split('.'))
-        profiles = model._default_manager.filter(user__id=user.id)
-        self.assertEquals(1, profiles.count())
 
 
 class ViewsTestSuite(TestCase):

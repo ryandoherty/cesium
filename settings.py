@@ -103,8 +103,6 @@ INSTALLED_APPS = (
 
 LOGIN_REDIRECT_URL = '/'
 
-AUTH_PROFILE_MODULE = 'autoyslow.UserProfile'
-
 try:
     from local_settings import *
 except ImportError:
