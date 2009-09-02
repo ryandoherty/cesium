@@ -5,14 +5,16 @@ import subprocess
 import time
 import settings
 
-# Since each site could potentially load hundreds of pages, this code loads 
-# ten pages in a single instance of Firefox, kills that instance, then 
-# repeats until all the requested pages have been loaded.  Since only one 
-# instance of Firefox can be run at any one time, we wait on the current  
-# thread to prevent multiple threads from trying to open Firefox at the 
-# same time.  This problem could be resolved by using multiple Firefox 
+# Since each site could potentially load hundreds of pages, this code loads
+# ten pages in a single instance of Firefox, kills that instance, then
+# repeats until all the requested pages have been loaded.  Since only one
+# instance of Firefox can be run at any one time, we wait on the current
+# thread to prevent multiple threads from trying to open Firefox at the
+# same time.  This problem could be resolved by using multiple Firefox
 # profiles.
 def run_test(page_list):
+    page_list = list(page_list)
+
     if len(page_list) == 0:
         time.sleep(60.0);
         return
