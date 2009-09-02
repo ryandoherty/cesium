@@ -111,8 +111,16 @@ TEMPLATE_DIRS = (
 )
 BROWSER_LOC = '/usr/bin/firefox'
 
-Start the daemon:
-#: python manage.py cesiumd
+Setup vncserver: (run as user cesium)
+#: vncserver :0
+#: (enter password, this is NOT cesium's password, it is a password used for
+#: accessing via a vnc client remotely. You are only prompted the first time
+#: vncserver is run)
+#: vncserver -kill :0
+#: vncserver :0
+
+vncserver can be tested by connecting via a vnclient, display 0 and the password
+supplied when starting it the first time.
 
 Leave user 'cesium':
 #: exit
@@ -126,3 +134,4 @@ Restart Apache
 Sync the Database tables for Cesium:
 #: cd /a/cesium/trunk/cesium
 #: python manage.py syncdb --noinput
+

@@ -45,6 +45,8 @@ Install the newest versions of the Firebug and YSlow Add-Ons in Firefox.
 Firebug: https://addons.mozilla.org/en-US/firefox/addon/1843
 YSlow: https://addons.mozilla.org/en-US/firefox/addon/5369
 
+Copy install/user.js to /path/to/cesium/profile/user.js
+
 Edit /path/to/profile/user.js for the profile in which Firebug and YSlow are
 installed with the following lines:
 
